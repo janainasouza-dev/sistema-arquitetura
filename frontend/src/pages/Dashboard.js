@@ -47,7 +47,7 @@ export default function Dashboard() {
       <div className="page-header">
         <div>
           <h2>Dashboard</h2>
-          <p>Bem-vindo ao sistema da Padaria do Zé 🥖</p>
+          <p>Bem-vindo ao sistema da Padaria WeCoffe 🥖</p>
         </div>
       </div>
 
