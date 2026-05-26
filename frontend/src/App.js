@@ -2,35 +2,39 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import './index.css';
-import Dashboard from './pages/Dashboard';
-import Produtos from './pages/Produtos';
-import Categorias from './pages/Categorias';
-import Clientes from './pages/Clientes';
-import Pedidos from './pages/Pedidos';
-import Login from './pages/Login';
+import Dashboard    from './pages/Dashboard';
+import Produtos     from './pages/Produtos';
+import Categorias   from './pages/Categorias';
+import Clientes     from './pages/Clientes';
+import Pedidos      from './pages/Pedidos';
+import Funcionarios from './pages/Funcionarios';
+import Login        from './pages/Login';
 
 function Sidebar({ usuario, onLogout }) {
   return (
     <div className="sidebar">
       <div className="sidebar-logo">
-        <h1>🥖 Padaria WeCoffe</h1>
+        <h1><i className="ti ti-bread"></i> Padaria WeCoffe</h1>
         <p>Sistema de Gestão</p>
       </div>
       <nav>
         <NavLink to="/" end>
-          <span className="nav-icon">📊</span> Dashboard
+          <i className="ti ti-layout-dashboard"></i> Dashboard
         </NavLink>
         <NavLink to="/produtos">
-          <span className="nav-icon">🍞</span> Produtos
+          <i className="ti ti-shopping-bag"></i> Produtos
         </NavLink>
         <NavLink to="/categorias">
-          <span className="nav-icon">🏷️</span> Categorias
+          <i className="ti ti-tag"></i> Categorias
         </NavLink>
         <NavLink to="/clientes">
-          <span className="nav-icon">👥</span> Clientes
+          <i className="ti ti-users"></i> Clientes
         </NavLink>
         <NavLink to="/pedidos">
-          <span className="nav-icon">🛒</span> Pedidos
+          <i className="ti ti-shopping-cart"></i> Pedidos
+        </NavLink>
+        <NavLink to="/funcionarios">
+          <i className="ti ti-id-badge-2"></i> Funcionários
         </NavLink>
       </nav>
 
@@ -40,8 +44,8 @@ function Sidebar({ usuario, onLogout }) {
         padding: '16px',
         borderTop: '1px solid rgba(255,255,255,0.1)',
       }}>
-        <div style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: 8 }}>
-          👤 {usuario?.nome || usuario?.email}
+        <div style={{ fontSize: '0.8rem', opacity: 0.7, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <i className="ti ti-user-circle"></i> {usuario?.nome || usuario?.email}
         </div>
         <button
           onClick={onLogout}
@@ -55,9 +59,13 @@ function Sidebar({ usuario, onLogout }) {
             cursor: 'pointer',
             fontSize: '0.85rem',
             fontFamily: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
           }}
         >
-          🚪 Sair
+          <i className="ti ti-logout"></i> Sair
         </button>
       </div>
     </div>
@@ -79,11 +87,12 @@ function App() {
         <Sidebar usuario={usuario} onLogout={() => setUsuario(null)} />
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/produtos" element={<Produtos />} />
-            <Route path="/categorias" element={<Categorias />} />
-            <Route path="/clientes" element={<Clientes />} />
-            <Route path="/pedidos" element={<Pedidos />} />
+            <Route path="/"             element={<Dashboard />} />
+            <Route path="/produtos"     element={<Produtos />} />
+            <Route path="/categorias"   element={<Categorias />} />
+            <Route path="/clientes"     element={<Clientes />} />
+            <Route path="/pedidos"      element={<Pedidos />} />
+            <Route path="/funcionarios" element={<Funcionarios />} />
           </Routes>
         </main>
       </div>
