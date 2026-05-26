@@ -1,11 +1,9 @@
 // src/server.js
 // Ponto de entrada do servidor Node.js
 // Este arquivo inicializa o microsserviço conforme a variável SERVICE_NAME
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-
 const app = express();
 const PORT = process.env.PORT || 3001;
 const SERVICE_NAME = process.env.SERVICE_NAME || 'produtos';
@@ -40,17 +38,23 @@ app.get('/health', (req, res) => {
 
 // Carrega as rotas do microsserviço correto
 if (SERVICE_NAME === 'produtos') {
-  const produtosRoutes = require('./routes/produtos.routes');
-  const categoriasRoutes = require('./routes/categorias.routes');
-  app.use('/api/produtos', produtosRoutes);
+  const produtosRoutes    = require('./routes/produtos.routes');
+  const categoriasRoutes  = require('./routes/categorias.routes');
+  app.use('/api/produtos',   produtosRoutes);
   app.use('/api/categorias', categoriasRoutes);
 }
 
 if (SERVICE_NAME === 'pedidos') {
-  const pedidosRoutes = require('./routes/pedidos.routes');
+  const pedidosRoutes  = require('./routes/pedidos.routes');
   const clientesRoutes = require('./routes/clientes.routes');
-  app.use('/api/pedidos', pedidosRoutes);
+  app.use('/api/pedidos',  pedidosRoutes);
   app.use('/api/clientes', clientesRoutes);
+}
+
+// ← NOVO: Microsserviço de Funcionários
+if (SERVICE_NAME === 'funcionarios') {
+  const funcionariosRoutes = require('./routes/funcionarios.routes');
+  app.use('/api/funcionarios', funcionariosRoutes);
 }
 
 // ============================================

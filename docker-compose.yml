@@ -83,6 +83,32 @@ services:
       - padaria_network
     restart: unless-stopped
 
+  # Backend - Node.js (Microsserviço de Funcionários) ← NOVO
+  backend-funcionarios:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: padaria_backend_funcionarios
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: padaria_user
+      DB_PASSWORD: padaria123
+      DB_NAME: padaria_db
+      SERVICE_NAME: funcionarios
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - padaria_network
+    restart: unless-stopped
+
   # Frontend - React
   frontend:
     build:
@@ -92,11 +118,13 @@ services:
     environment:
       REACT_APP_API_PRODUTOS: http://localhost:3001/api
       REACT_APP_API_PEDIDOS: http://localhost:3002/api
+      REACT_APP_API_FUNCIONARIOS: http://localhost:3003/api
     ports:
       - "3000:3000"
     depends_on:
       - backend-produtos
       - backend-pedidos
+      - backend-funcionarios
     volumes:
       - ./frontend:/app
       - /app/node_modules
