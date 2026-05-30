@@ -1,4 +1,3 @@
-// backend/src/controllers/funcionarios.controller.js
 
 const db = require('../config/database');
 

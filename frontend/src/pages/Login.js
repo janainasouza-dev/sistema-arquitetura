@@ -1,5 +1,5 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
+import { authService } from '../services/api';
 
 export default function Login({ onLogin }) {
   const [form, setForm] = useState({ email: '', senha: '' });
@@ -9,28 +9,55 @@ export default function Login({ onLogin }) {
 
   const handleSubmit = async () => {
     setErro(null);
+    
     if (!form.email || !form.senha) {
       setErro('Preencha todos os campos.');
       return;
     }
+    
     setLoading(true);
+    
     try {
-      // Substitua aqui pela chamada real à sua API de autenticação
-      // Exemplo: const res = await authService.login(form);
-      // onLogin(res.data.token);
-      await new Promise(r => setTimeout(r, 1000)); // simulação
-      if (form.email === 'admin@padaria.com' && form.senha === '1234') {
-        onLogin?.({ email: form.email, nome: 'Zé da Padaria' });
-      } else {
-        setErro('Email ou senha inválidos.');
+      console.log('📧 Tentando login com:', form.email);
+      
+      // Chamada REAL para sua API usando o authService
+      const { user } = await authService.login(form.email, form.senha);
+      
+      console.log('✅ Login bem-sucedido! Usuário:', user);
+      console.log('🔑 Token salvo:', localStorage.getItem('@App:token'));
+      
+      // Chama o callback onLogin passando os dados do usuário
+      // O App.js vai gerenciar o redirecionamento automaticamente
+      if (onLogin) {
+        onLogin(user);
       }
-    } catch {
-      setErro('Erro ao conectar. Tente novamente.');
+      
+    } catch (error) {
+      console.error('❌ Erro detalhado no login:', error);
+      console.error('Response:', error.response);
+      console.error('Request:', error.request);
+      
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            setErro('Email ou senha inválidos.');
+            break;
+          case 404:
+            setErro('Serviço de autenticação não encontrado. Contate o suporte.');
+            break;
+          default:
+            setErro(error.response.data?.message || error.response.data?.mensagem || 'Erro ao fazer login. Tente novamente.');
+        }
+      } else if (error.request) {
+        setErro('Não foi possível conectar ao servidor. Verifique sua conexão.');
+      } else {
+        setErro('Erro ao tentar fazer login: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <>
       <style>{`

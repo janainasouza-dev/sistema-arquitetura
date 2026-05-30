@@ -1,4 +1,3 @@
-// src/pages/Funcionarios.js
 import React, { useEffect, useState } from 'react';
 
 // Simulação de serviço — substitua pelo seu funcionariosService real
