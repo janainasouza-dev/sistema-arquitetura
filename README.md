@@ -6,11 +6,13 @@
 ## 📦 Como Rodar o Projeto (Passo a Passo)
 
 ### Pré-requisitos
+
 - Docker Desktop instalado: https://www.docker.com/products/docker-desktop
 - Git instalado
 - Portas 3000, 3001, 3002, 3003, 5050, 5433 disponíveis
 
 ### 1. Clonar o repositório
+
 ```bash
 git clone [url-do-repositorio]
 cd sistema-arquitetura
@@ -18,34 +20,40 @@ cd sistema-arquitetura
 2. Configurar variáveis de ambiente do frontend
 bash
 
-# Criar arquivo .env na pasta frontend
+3. Criar arquivo .env na pasta frontend
+
 cat > frontend/.env << EOF
 REACT_APP_API_PRODUTOS=http://localhost:3001/api
 REACT_APP_API_PEDIDOS=http://localhost:3002/api
 REACT_APP_API_FUNCIONARIOS=http://localhost:3003/api
 EOF
 
-3. Subir todos os contêineres
+4. Subir todos os contêineres
 bash
 
 # Primeira vez ou após alterações
+
 docker compose up -d --build
 
 # Apenas iniciar (após já ter subido antes)
 docker compose start
 
 # Parar o sistema (mantém dados)
+
 docker compose stop
 
 Aguarde todos os serviços subirem. Na primeira vez pode demorar alguns minutos.
-4. Acessar o Sistema
+
+5. Acessar o Sistema
+
 Serviço	URL	Credenciais
 Frontend (React)	http://localhost:3000	admin@padaria.com / 1234
 Backend Produtos	http://localhost:3001/health	-
 Backend Pedidos	http://localhost:3002/health	-
 Backend Funcionários	http://localhost:3003/health	-
 pgAdmin (banco)	http://localhost:5050	admin@pgadmin.com / admin
-5. Login no pgAdmin
+
+6. Login no pgAdmin
 
     Email: admin@pgadmin.com
 
@@ -199,6 +207,7 @@ sistema-arquitetura/
                     │    pgAdmin      │
                     │    :5050        │
                     └─────────────────┘
+
 # Tecnologias utilizadas 
 
 Docker	Containerização
