@@ -112,19 +112,19 @@ Antes de começar, certifique-se de ter instalado:
 ```
 git clone https://github.com/janainasouza-dev/sistema-arquitetura.git
 
-cd padaria-wecoffe
+cd sistema-arquitetura
 ```
 
 ### 2. Configurar variáveis de ambiente
 
 ```
-# Criar arquivo .env do frontend
+# Criar arquivo .env dentro do frontend com o seguinte codigo: 
 
-cat > frontend/.env << EOF
+
 REACT_APP_API_PRODUTOS=http://localhost:3001/api
 REACT_APP_API_PEDIDOS=http://localhost:3002/api
 REACT_APP_API_FUNCIONARIOS=http://localhost:3003/api
-EOF
+
 ```
 
 ### 3. Subir os contêineres

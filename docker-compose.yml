@@ -1,5 +1,6 @@
+version: '3.8'
+
 services:
-  # Banco de Dados PostgreSQL
   postgres:
     image: postgres:15-alpine
     container_name: padaria_postgres
@@ -11,128 +12,121 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - padaria_network
     restart: unless-stopped
+    extra_hosts:
+      - "localhost:host-gateway"
 
-  # pgAdmin - Interface visual do banco de dados
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: padaria_pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@padaria.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-    networks:
-      - padaria_network
-    restart: unless-stopped
-
-  # Backend - Node.js (Microsserviço de Produtos)
   backend-produtos:
-    build:
+    build: 
       context: ./backend
       dockerfile: Dockerfile
     container_name: padaria_backend_produtos
     environment:
-      NODE_ENV: development
       PORT: 3001
+      SERVICE_NAME: produtos
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: padaria_user
       DB_PASSWORD: padaria123
       DB_NAME: padaria_db
-      SERVICE_NAME: produtos
+      JWT_SECRET: padaria_secret_dev
+      NODE_ENV: development
     ports:
       - "3001:3001"
     depends_on:
       - postgres
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - padaria_network
     restart: unless-stopped
+    extra_hosts:
+      - "localhost:host-gateway"
+    command: sh -c "SERVICE_NAME=produtos npm run dev"
 
-  # Backend - Node.js (Microsserviço de Pedidos)
   backend-pedidos:
-    build:
+    build: 
       context: ./backend
       dockerfile: Dockerfile
     container_name: padaria_backend_pedidos
     environment:
-      NODE_ENV: development
       PORT: 3002
+      SERVICE_NAME: pedidos
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: padaria_user
       DB_PASSWORD: padaria123
       DB_NAME: padaria_db
-      SERVICE_NAME: pedidos
+      JWT_SECRET: padaria_secret_dev
+      NODE_ENV: development
     ports:
       - "3002:3002"
     depends_on:
       - postgres
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - padaria_network
     restart: unless-stopped
+    extra_hosts:
+      - "localhost:host-gateway"
+    command: sh -c "SERVICE_NAME=pedidos npm run dev"
 
-  # Backend - Node.js (Microsserviço de Funcionários)
   backend-funcionarios:
-    build:
+    build: 
       context: ./backend
       dockerfile: Dockerfile
     container_name: padaria_backend_funcionarios
     environment:
-      NODE_ENV: development
       PORT: 3003
+      SERVICE_NAME: funcionarios
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: padaria_user
       DB_PASSWORD: padaria123
       DB_NAME: padaria_db
-      SERVICE_NAME: funcionarios
+      JWT_SECRET: padaria_secret_dev
+      NODE_ENV: development
     ports:
       - "3003:3003"
     depends_on:
       - postgres
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - padaria_network
     restart: unless-stopped
+    extra_hosts:
+      - "localhost:host-gateway"
+    command: sh -c "SERVICE_NAME=funcionarios npm run dev"
 
-  # Frontend - React
   frontend:
-    build:
+    build: 
       context: ./frontend
       dockerfile: Dockerfile
     container_name: padaria_frontend
-    env_file:
-      - ./frontend/.env
+    environment:
+      REACT_APP_API_PRODUTOS: http://localhost:3001/api
+      REACT_APP_API_PEDIDOS: http://localhost:3002/api
+      REACT_APP_API_FUNCIONARIOS: http://localhost:3003/api
+      WDS_SOCKET_PORT: 0
+      CHOKIDAR_USEPOLLING: true
     ports:
       - "3000:3000"
     depends_on:
       - backend-produtos
       - backend-pedidos
       - backend-funcionarios
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     networks:
       - padaria_network
     restart: unless-stopped
-
-networks:
-  padaria_network:
-    driver: bridge
+    extra_hosts:
+      - "localhost:host-gateway"
+    stdin_open: true
+    tty: true
 
 volumes:
   postgres_data:
+    name: padaria_postgres_data
+
+networks:
+  padaria_network:
+    name: padaria_network
+    driver: bridge
+    
