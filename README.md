@@ -98,31 +98,34 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 
 Antes de começar, certifique-se de ter instalado:
 
+
+
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (versão 20.10+)
 - [Git](https://git-scm.com/) (versão 2.30+)
 - Portas disponíveis: `3000`, `3001`, `3002`, `3003`, `5050`, `5432`
-
 
 
 ##  Instalação e Execução
 
 ### 1. Clonar o repositório
 
-
+```
 git clone https://github.com/seu-usuario/padaria-wecoffe.git
-cd padaria-wecoffe
 
+cd padaria-wecoffe
+```
 
 ### 2. Configurar variáveis de ambiente
 
-
+```
 # Criar arquivo .env do frontend
+
 cat > frontend/.env << EOF
 REACT_APP_API_PRODUTOS=http://localhost:3001/api
 REACT_APP_API_PEDIDOS=http://localhost:3002/api
 REACT_APP_API_FUNCIONARIOS=http://localhost:3003/api
 EOF
-
+```
 
 ### 3. Subir os contêineres
 
