@@ -13,7 +13,7 @@
 
 ---
 
-## 📋 Índice
+##  Índice
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Arquitetura](#arquitetura)
@@ -31,11 +31,11 @@
 
 ---
 
-## 📖 Sobre o Projeto
+## Sobre o Projeto
 
 A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolvido com arquitetura baseada em **microsserviços**. O sistema permite gerenciar produtos, pedidos, clientes e funcionários de forma independente e escalável.
 
-### 🎯 Objetivos Educacionais
+### Objetivos Educacionais
 
 - Aplicar conceitos de **Arquitetura de Software**
 - Implementar **microsserviços** com Node.js e Express
@@ -45,9 +45,11 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 
 ---
 
-## 🏗️ Arquitetura
+##  Arquitetura
 
 ### Visão Geral
+
+```
 
                     ┌─────────────────┐
                     │    Frontend     │
@@ -68,7 +70,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
                     │   PostgreSQL    │
                     │   :5432         │
                     └─────────────────┘
-
+```
 
 ### Vantagens dos Microsserviços
 
@@ -80,7 +82,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 | **Tecnologias flexíveis** | Cada serviço usa a melhor ferramenta |
 
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 | Camada | Tecnologias |
 |--------|-------------|
@@ -92,7 +94,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 | **Versionamento** | Git, GitHub |
 
 
-## 📦 Pré-requisitos
+##  Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
@@ -102,7 +104,7 @@ Antes de começar, certifique-se de ter instalado:
 
 
 
-## 🚀 Instalação e Execução
+##  Instalação e Execução
 
 ### 1. Clonar o repositório
 
@@ -396,7 +398,7 @@ O sistema utiliza **JSON Web Tokens** para autenticação:
 
 ---
 
-## 🐛 Solução de Problemas
+## Solução de Problemas
 
 | Problema | Solução |
 |----------|---------|
