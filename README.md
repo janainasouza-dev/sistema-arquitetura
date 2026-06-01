@@ -1,8 +1,4 @@
-Claro! Vou te ajudar a transformar esse README em um documento mais profissional, organizado e seguindo as boas práticas que você vê em repositórios de destaque no GitHub.
 
-Aqui está a versão reestruturada:
-
----
 
 ```markdown
 # 🥖 Padaria WeCoffe
@@ -432,18 +428,6 @@ O sistema utiliza **JSON Web Tokens** para autenticação:
 
 ---
 
-## 👨‍💻 Desenvolvedor
-
-**Seu Nome**  
-[![GitHub](https://img.shields.io/badge/GitHub-000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/seu-usuario)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/seu-perfil)
-
-- **Disciplina:** Arquitetura de Software  
-- **Período:** 3º Período ADS  
-- **Instituição:** [Nome da Faculdade]
-
----
-
 ## 📄 Licença
 
 Este projeto foi desenvolvido para **fins educacionais** como parte da disciplina de Arquitetura de Software.
@@ -466,4 +450,3 @@ Este projeto foi desenvolvido para **fins educacionais** como parte da disciplin
 7. **Cabeçalho com destaque** - Nome do projeto em destaque
 8. **Organização hierárquica** - De informações gerais para específicas
 
-Isso torna o README muito mais **profissional**, **escaneável** e **fácil de usar** para outros desenvolvedores ou avaliadores! 🚀
