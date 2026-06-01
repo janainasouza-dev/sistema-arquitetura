@@ -110,7 +110,7 @@ Antes de começar, certifique-se de ter instalado:
 ### 1. Clonar o repositório
 
 ```
-git clone https://github.com/seu-usuario/padaria-wecoffe.git
+git clone https://github.com/janainasouza-dev/sistema-arquitetura.git
 
 cd padaria-wecoffe
 ```
