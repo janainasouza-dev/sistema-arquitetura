@@ -1,7 +1,6 @@
 
 
-```markdown
-# 🥖 Padaria WeCoffe
+## 🥖 Padaria WeCoffe
 
 > **Sistema de Gestão com Microsserviços**  
 > Disciplina: Arquitetura de Software | 3º Período ADS
@@ -80,7 +79,6 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 | **Deploys autônomos** | Atualiza sem parar todo o sistema |
 | **Tecnologias flexíveis** | Cada serviço usa a melhor ferramenta |
 
----
 
 ## 🛠️ Tecnologias
 
@@ -93,7 +91,6 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 | **Gerenciamento** | pgAdmin |
 | **Versionamento** | Git, GitHub |
 
----
 
 ## 📦 Pré-requisitos
 
@@ -103,27 +100,27 @@ Antes de começar, certifique-se de ter instalado:
 - [Git](https://git-scm.com/) (versão 2.30+)
 - Portas disponíveis: `3000`, `3001`, `3002`, `3003`, `5050`, `5432`
 
----
+
 
 ## 🚀 Instalação e Execução
 
 ### 1. Clonar o repositório
 
-```bash
+
 git clone https://github.com/seu-usuario/padaria-wecoffe.git
 cd padaria-wecoffe
-```
+
 
 ### 2. Configurar variáveis de ambiente
 
-```bash
+
 # Criar arquivo .env do frontend
 cat > frontend/.env << EOF
 REACT_APP_API_PRODUTOS=http://localhost:3001/api
 REACT_APP_API_PEDIDOS=http://localhost:3002/api
 REACT_APP_API_FUNCIONARIOS=http://localhost:3003/api
 EOF
-```
+
 
 ### 3. Subir os contêineres
 
