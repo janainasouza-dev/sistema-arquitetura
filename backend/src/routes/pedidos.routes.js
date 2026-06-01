@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const ctrl = require('../controllers/pedidos.controller');
+const pedidosController = require('../controllers/pedidos.controller');
 
-router.get('/', ctrl.listarPedidos);
-router.get('/:id', ctrl.buscarPedidoPorId);
-router.post('/', ctrl.criarPedido);
-router.patch('/:id/status', ctrl.atualizarStatusPedido);
+router.get('/', pedidosController.listar);
+router.get('/relatorio', pedidosController.relatorioVendas);
+router.get('/:id', pedidosController.buscarPorId);
+router.post('/', pedidosController.criar);
+router.patch('/:id/status', pedidosController.atualizarStatus);
 
 module.exports = router;

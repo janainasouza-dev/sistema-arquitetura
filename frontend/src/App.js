@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import './index.css';
@@ -8,6 +7,7 @@ import Categorias   from './pages/Categorias';
 import Clientes     from './pages/Clientes';
 import Pedidos      from './pages/Pedidos';
 import Funcionarios from './pages/Funcionarios';
+import Relatorios   from './pages/Relatorios';
 import Login        from './pages/Login';
 
 function Sidebar({ usuario, onLogout }) {
@@ -36,9 +36,11 @@ function Sidebar({ usuario, onLogout }) {
         <NavLink to="/funcionarios">
           <i className="ti ti-id-badge-2"></i> Funcionários
         </NavLink>
+        <NavLink to="/relatorios">
+          <i className="ti ti-chart-bar"></i> Relatórios
+        </NavLink>
       </nav>
 
-      {/* Rodapé da sidebar com usuário logado e botão de sair */}
       <div style={{
         marginTop: 'auto',
         padding: '16px',
@@ -75,12 +77,10 @@ function Sidebar({ usuario, onLogout }) {
 function App() {
   const [usuario, setUsuario] = useState(null);
 
-  // Se não há usuário logado, mostra só a tela de Login
   if (!usuario) {
     return <Login onLogin={setUsuario} />;
   }
 
-  // Se está logado, mostra o app completo
   return (
     <BrowserRouter>
       <div className="app-layout">
@@ -93,6 +93,7 @@ function App() {
             <Route path="/clientes"     element={<Clientes />} />
             <Route path="/pedidos"      element={<Pedidos />} />
             <Route path="/funcionarios" element={<Funcionarios />} />
+            <Route path="/relatorios"   element={<Relatorios />} />
           </Routes>
         </main>
       </div>

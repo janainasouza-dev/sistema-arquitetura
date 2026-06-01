@@ -1,145 +1,202 @@
-// src/controllers/pedidos.controller.js
-
 const db = require('../config/database');
 
-// GET /api/pedidos - Lista todos os pedidos
-const listarPedidos = async (req, res) => {
+// Listar pedidos
+const listar = async (req, res) => {
   try {
-    const { status } = req.query;
-    let query = `
-      SELECT p.*, c.nome AS cliente_nome, c.telefone AS cliente_telefone
+    const resultado = await db.query(`
+      SELECT p.*, c.nome as cliente_nome 
       FROM pedidos p
-      LEFT JOIN clientes c ON p.cliente_id = c.id
-    `;
-    const params = [];
-
-    if (status) {
-      params.push(status);
-      query += ` WHERE p.status = $1`;
-    }
-
-    query += ' ORDER BY p.criado_em DESC';
-
-    const resultado = await db.query(query, params);
-    res.json({ sucesso: true, total: resultado.rows.length, dados: resultado.rows });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+      JOIN clientes c ON p.cliente_id = c.id
+      ORDER BY p.criado_em DESC
+    `);
+    
+    res.json({ sucesso: true, pedidos: resultado.rows });
+  } catch (err) {
+    console.error('Erro ao listar pedidos:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-// GET /api/pedidos/:id - Detalhes de um pedido com itens
-const buscarPedidoPorId = async (req, res) => {
+// Buscar pedido por ID
+const buscarPorId = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const pedido = await db.query(
-      `SELECT p.*, c.nome AS cliente_nome, c.email AS cliente_email, c.telefone AS cliente_telefone
-       FROM pedidos p
-       LEFT JOIN clientes c ON p.cliente_id = c.id
-       WHERE p.id = $1`,
+    
+    const pedidoResult = await db.query(
+      'SELECT * FROM pedidos WHERE id = $1',
       [id]
     );
-
-    if (pedido.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Pedido não encontrado' });
+    
+    if (pedidoResult.rows.length === 0) {
+      return res.status(404).json({ sucesso: false, mensagem: 'Pedido não encontrado.' });
     }
-
-    const itens = await db.query(
-      `SELECT ip.*, pr.nome AS produto_nome
-       FROM itens_pedido ip
-       JOIN produtos pr ON ip.produto_id = pr.id
-       WHERE ip.pedido_id = $1`,
-      [id]
-    );
-
+    
+    const itensResult = await db.query(`
+      SELECT ip.*, p.nome as produto_nome 
+      FROM itens_pedido ip
+      JOIN produtos p ON ip.produto_id = p.id
+      WHERE ip.pedido_id = $1
+    `, [id]);
+    
     res.json({
       sucesso: true,
-      dados: {
-        ...pedido.rows[0],
-        itens: itens.rows,
-      },
+      pedido: pedidoResult.rows[0],
+      itens: itensResult.rows
     });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+  } catch (err) {
+    console.error('Erro ao buscar pedido:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-// POST /api/pedidos - Cria um novo pedido
-const criarPedido = async (req, res) => {
-  const client = await db.connect(); // Usa transação para garantir integridade
+// Criar pedido
+const criar = async (req, res) => {
+  const client = await db.getClient();
   try {
     await client.query('BEGIN');
-
+    
     const { cliente_id, itens, observacao } = req.body;
-
+    
     if (!cliente_id || !itens || itens.length === 0) {
-      return res.status(400).json({
-        sucesso: false,
-        mensagem: 'cliente_id e itens são obrigatórios',
-      });
+      await client.query('ROLLBACK');
+      return res.status(400).json({ sucesso: false, mensagem: 'Cliente e itens são obrigatórios.' });
     }
-
-    // Calcular total
+    
     let total = 0;
     for (const item of itens) {
-      total += item.quantidade * item.preco_unitario;
+      const produtoResult = await client.query(
+        'SELECT preco FROM produtos WHERE id = $1',
+        [item.produto_id]
+      );
+      if (produtoResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ sucesso: false, mensagem: `Produto ${item.produto_id} não encontrado.` });
+      }
+      const preco = parseFloat(produtoResult.rows[0].preco);
+      total += preco * item.quantidade;
     }
-
-    // Criar pedido
+    
     const pedidoResult = await client.query(
-      `INSERT INTO pedidos (cliente_id, total, observacao, status)
-       VALUES ($1, $2, $3, 'pendente') RETURNING *`,
+      `INSERT INTO pedidos (cliente_id, status, total, observacao, criado_em, atualizado_em)
+       VALUES ($1, 'pendente', $2, $3, NOW(), NOW())
+       RETURNING *`,
       [cliente_id, total, observacao]
     );
-    const pedido = pedidoResult.rows[0];
-
-    // Inserir itens
+    
+    const pedidoId = pedidoResult.rows[0].id;
+    
     for (const item of itens) {
+      const produtoResult = await client.query(
+        'SELECT preco FROM produtos WHERE id = $1',
+        [item.produto_id]
+      );
+      const preco = parseFloat(produtoResult.rows[0].preco);
+      const subtotal = preco * item.quantidade;
+      
       await client.query(
-        `INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario)
-         VALUES ($1, $2, $3, $4)`,
-        [pedido.id, item.produto_id, item.quantidade, item.preco_unitario]
+        `INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario, subtotal)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [pedidoId, item.produto_id, item.quantidade, preco, subtotal]
       );
     }
-
+    
     await client.query('COMMIT');
-    res.status(201).json({ sucesso: true, dados: pedido });
-  } catch (erro) {
+    
+    res.status(201).json({ sucesso: true, pedido: pedidoResult.rows[0] });
+  } catch (err) {
     await client.query('ROLLBACK');
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+    console.error('Erro ao criar pedido:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   } finally {
     client.release();
   }
 };
 
-// PATCH /api/pedidos/:id/status - Atualiza o status do pedido
-const atualizarStatusPedido = async (req, res) => {
+// Atualizar status do pedido
+const atualizarStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-
-    const statusValidos = ['pendente', 'em_preparo', 'pronto', 'entregue', 'cancelado'];
+    
+    const statusValidos = ['pendente', 'pago', 'enviado', 'entregue', 'cancelado'];
     if (!statusValidos.includes(status)) {
-      return res.status(400).json({
-        sucesso: false,
-        mensagem: `Status inválido. Use: ${statusValidos.join(', ')}`,
-      });
+      return res.status(400).json({ sucesso: false, mensagem: 'Status inválido.' });
     }
-
+    
     const resultado = await db.query(
-      `UPDATE pedidos SET status = $1, atualizado_em = CURRENT_TIMESTAMP
-       WHERE id = $2 RETURNING *`,
+      'UPDATE pedidos SET status = $1, atualizado_em = NOW() WHERE id = $2 RETURNING *',
       [status, id]
     );
-
+    
     if (resultado.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Pedido não encontrado' });
+      return res.status(404).json({ sucesso: false, mensagem: 'Pedido não encontrado.' });
     }
-
-    res.json({ sucesso: true, dados: resultado.rows[0] });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+    
+    res.json({ sucesso: true, pedido: resultado.rows[0] });
+  } catch (err) {
+    console.error('Erro ao atualizar status:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-module.exports = { listarPedidos, buscarPedidoPorId, criarPedido, atualizarStatusPedido };
+// Relatório de vendas
+const relatorioVendas = async (req, res) => {
+  try {
+    const { dataInicio, dataFim } = req.query;
+    
+    let query = `
+      SELECT 
+        DATE(p.criado_em) as data,
+        COUNT(*) as total_pedidos,
+        SUM(p.total) as valor_total,
+        COUNT(DISTINCT p.cliente_id) as clientes_unicos
+      FROM pedidos p
+      WHERE p.status = 'entregue'
+    `;
+    let params = [];
+    let paramIndex = 1;
+    
+    if (dataInicio && dataFim) {
+      query += ` AND p.criado_em BETWEEN $${paramIndex} AND $${paramIndex + 1}`;
+      params.push(dataInicio, dataFim);
+      paramIndex += 2;
+    }
+    
+    query += ` GROUP BY DATE(p.criado_em) ORDER BY data DESC`;
+    
+    const resultado = await db.query(query, params);
+    
+    const produtosQuery = `
+      SELECT 
+        pr.nome,
+        SUM(ip.quantidade) as quantidade_vendida,
+        SUM(ip.subtotal) as total_vendido
+      FROM itens_pedido ip
+      JOIN produtos pr ON ip.produto_id = pr.id
+      JOIN pedidos p ON ip.pedido_id = p.id
+      WHERE p.status = 'entregue'
+      ${dataInicio && dataFim ? `AND p.criado_em BETWEEN '${dataInicio}' AND '${dataFim}'` : ''}
+      GROUP BY pr.id
+      ORDER BY quantidade_vendida DESC
+      LIMIT 10
+    `;
+    
+    const produtosMaisVendidos = await db.query(produtosQuery);
+    
+    res.json({
+      sucesso: true,
+      relatorio: resultado.rows,
+      produtos_mais_vendidos: produtosMaisVendidos.rows,
+      resumo: {
+        total_vendas: resultado.rows.reduce((acc, r) => acc + parseFloat(r.valor_total), 0),
+        total_pedidos: resultado.rows.reduce((acc, r) => acc + parseInt(r.total_pedidos), 0),
+        total_clientes: resultado.rows.reduce((acc, r) => acc + parseInt(r.clientes_unicos), 0)
+      }
+    });
+  } catch (err) {
+    console.error('Erro no relatório:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
+  }
+};
+
+module.exports = { listar, buscarPorId, criar, atualizarStatus, relatorioVendas };

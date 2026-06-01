@@ -1,155 +1,148 @@
-// src/controllers/produtos.controller.js
-// Controller do recurso Produtos
-// Contém a lógica de negócio (CRUD completo)
-
 const db = require('../config/database');
 
-// GET /api/produtos - Lista todos os produtos
-const listarProdutos = async (req, res) => {
+// Listar produtos com paginação e busca
+const listar = async (req, res) => {
   try {
-    const { categoria_id, ativo, busca } = req.query;
-
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const busca = req.query.busca || '';
+    
     let query = `
-      SELECT p.*, c.nome AS categoria_nome
+      SELECT p.*, c.nome as categoria_nome 
       FROM produtos p
       LEFT JOIN categorias c ON p.categoria_id = c.id
-      WHERE 1=1
+      WHERE p.ativo = true
     `;
-    const params = [];
-
-    if (categoria_id) {
-      params.push(categoria_id);
-      query += ` AND p.categoria_id = $${params.length}`;
-    }
-
-    if (ativo !== undefined) {
-      params.push(ativo === 'true');
-      query += ` AND p.ativo = $${params.length}`;
-    }
-
+    let params = [];
+    let paramIndex = 1;
+    
     if (busca) {
+      query += ` AND (p.nome ILIKE $${paramIndex} OR p.descricao ILIKE $${paramIndex})`;
       params.push(`%${busca}%`);
-      query += ` AND (p.nome ILIKE $${params.length} OR p.descricao ILIKE $${params.length})`;
+      paramIndex++;
     }
-
-    query += ' ORDER BY p.nome ASC';
-
+    
+    query += ` ORDER BY p.id LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+    params.push(limit, offset);
+    
     const resultado = await db.query(query, params);
+    
+    // Query de total com filtro
+    let totalQuery = 'SELECT COUNT(*) as total FROM produtos WHERE ativo = true';
+    let totalParams = [];
+    
+    if (busca) {
+      totalQuery += ` AND (nome ILIKE $1 OR descricao ILIKE $1)`;
+      totalParams.push(`%${busca}%`);
+    }
+    
+    const totalResult = await db.query(totalQuery, totalParams);
+    const total = parseInt(totalResult.rows[0].total);
+    
     res.json({
       sucesso: true,
-      total: resultado.rows.length,
-      dados: resultado.rows,
+      produtos: resultado.rows,
+      paginacao: {
+        pagina_atual: page,
+        total_paginas: Math.ceil(total / limit),
+        total_registros: total,
+        por_pagina: limit
+      }
     });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+  } catch (err) {
+    console.error('Erro ao listar produtos:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-// GET /api/produtos/:id - Busca um produto por ID
-const buscarProdutoPorId = async (req, res) => {
+// Buscar produto por ID
+const buscarPorId = async (req, res) => {
   try {
     const { id } = req.params;
     const resultado = await db.query(
-      `SELECT p.*, c.nome AS categoria_nome
-       FROM produtos p
-       LEFT JOIN categorias c ON p.categoria_id = c.id
-       WHERE p.id = $1`,
+      'SELECT * FROM produtos WHERE id = $1 AND ativo = true',
       [id]
     );
-
+    
     if (resultado.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado' });
+      return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado.' });
     }
-
-    res.json({ sucesso: true, dados: resultado.rows[0] });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+    
+    res.json({ sucesso: true, produto: resultado.rows[0] });
+  } catch (err) {
+    console.error('Erro ao buscar produto:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-// POST /api/produtos - Cria um novo produto
-const criarProduto = async (req, res) => {
+// Criar produto
+const criar = async (req, res) => {
   try {
     const { nome, descricao, preco, estoque, categoria_id, imagem_url } = req.body;
-
-    // Validação básica
+    
     if (!nome || !preco) {
-      return res.status(400).json({
-        sucesso: false,
-        mensagem: 'Nome e preço são obrigatórios',
-      });
+      return res.status(400).json({ sucesso: false, mensagem: 'Nome e preço são obrigatórios.' });
     }
-
+    
     const resultado = await db.query(
-      `INSERT INTO produtos (nome, descricao, preco, estoque, categoria_id, imagem_url)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO produtos (nome, descricao, preco, estoque, categoria_id, imagem_url, ativo, criado_em, atualizado_em)
+       VALUES ($1, $2, $3, $4, $5, $6, true, NOW(), NOW())
        RETURNING *`,
-      [nome, descricao, preco, estoque || 0, categoria_id, imagem_url]
+      [nome, descricao, preco, estoque || 0, categoria_id || null, imagem_url || null]
     );
-
-    res.status(201).json({ sucesso: true, dados: resultado.rows[0] });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+    
+    res.status(201).json({ sucesso: true, produto: resultado.rows[0] });
+  } catch (err) {
+    console.error('Erro ao criar produto:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-// PUT /api/produtos/:id - Atualiza um produto
-const atualizarProduto = async (req, res) => {
+// Atualizar produto
+const atualizar = async (req, res) => {
   try {
     const { id } = req.params;
     const { nome, descricao, preco, estoque, categoria_id, imagem_url, ativo } = req.body;
-
+    
     const resultado = await db.query(
-      `UPDATE produtos
-       SET nome = COALESCE($1, nome),
-           descricao = COALESCE($2, descricao),
-           preco = COALESCE($3, preco),
-           estoque = COALESCE($4, estoque),
-           categoria_id = COALESCE($5, categoria_id),
-           imagem_url = COALESCE($6, imagem_url),
-           ativo = COALESCE($7, ativo),
-           atualizado_em = CURRENT_TIMESTAMP
-       WHERE id = $8
+      `UPDATE produtos 
+       SET nome = $1, descricao = $2, preco = $3, estoque = $4, 
+           categoria_id = $5, imagem_url = $6, ativo = $7, atualizado_em = NOW()
+       WHERE id = $8 AND ativo = true
        RETURNING *`,
       [nome, descricao, preco, estoque, categoria_id, imagem_url, ativo, id]
     );
-
+    
     if (resultado.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado' });
+      return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado.' });
     }
-
-    res.json({ sucesso: true, dados: resultado.rows[0] });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+    
+    res.json({ sucesso: true, produto: resultado.rows[0] });
+  } catch (err) {
+    console.error('Erro ao atualizar produto:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-// DELETE /api/produtos/:id - Remove (desativa) um produto
-const deletarProduto = async (req, res) => {
+// Deletar produto (soft delete)
+const deletar = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Soft delete: apenas desativa, não remove do banco
     const resultado = await db.query(
-      `UPDATE produtos SET ativo = FALSE, atualizado_em = CURRENT_TIMESTAMP
-       WHERE id = $1 RETURNING *`,
+      'UPDATE produtos SET ativo = false WHERE id = $1 RETURNING id',
       [id]
     );
-
+    
     if (resultado.rows.length === 0) {
-      return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado' });
+      return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado.' });
     }
-
-    res.json({ sucesso: true, mensagem: 'Produto desativado com sucesso' });
-  } catch (erro) {
-    res.status(500).json({ sucesso: false, mensagem: erro.message });
+    
+    res.json({ sucesso: true, mensagem: 'Produto removido com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao deletar produto:', err);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno.' });
   }
 };
 
-module.exports = {
-  listarProdutos,
-  buscarProdutoPorId,
-  criarProduto,
-  atualizarProduto,
-  deletarProduto,
-};
+module.exports = { listar, buscarPorId, criar, atualizar, deletar };

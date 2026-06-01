@@ -1,4 +1,3 @@
-// src/controllers/clientes.controller.js
 
 const db = require('../config/database');
 

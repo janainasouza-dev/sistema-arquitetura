@@ -1,123 +1,136 @@
-// src/pages/Dashboard.js
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip, Legend, PieChart, Pie, Cell 
+} from 'recharts';
 import { produtosService, pedidosService, clientesService } from '../services/api';
 
+const COLORS = ['#c8841a', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+
 export default function Dashboard() {
-  const [stats, setStats] = useState({ produtos: 0, pedidos: 0, clientes: 0, pendentes: 0 });
-  const [pedidosRecentes, setPedidosRecentes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalProdutos: 0,
+    totalPedidos: 0,
+    totalClientes: 0,
+    produtosEstoqueBaixo: 0,
+    pedidosPorStatus: [],
+    vendasPorMes: []
+  });
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    async function carregarDados() {
-      try {
-        const [resProdutos, resPedidos, resClientes] = await Promise.all([
-          produtosService.listar({ ativo: true }),
-          pedidosService.listar(),
-          clientesService.listar(),
-        ]);
-
-        const pedidos = resPedidos.data.dados || [];
-        const pendentes = pedidos.filter(p => p.status === 'pendente' || p.status === 'em_preparo').length;
-
-        setStats({
-          produtos: resProdutos.data.total || 0,
-          pedidos: pedidos.length,
-          clientes: resClientes.data.dados?.length || 0,
-          pendentes,
-        });
-
-        setPedidosRecentes(pedidos.slice(0, 5));
-      } catch (err) {
-        console.error('Erro ao carregar dashboard:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    carregarDados();
+    carregarDashboard();
   }, []);
 
-  const statusBadge = (status) => (
-    <span className={`badge badge-${status}`}>{status.replace('_', ' ')}</span>
-  );
+  const carregarDashboard = async () => {
+    try {
+      const produtosRes = await produtosService.listar({ limit: 1000 });
+      const produtos = produtosRes.data.produtos || [];
+      
+      const pedidosRes = await pedidosService.listar();
+      const pedidos = pedidosRes.data.pedidos || [];
+      
+      const clientesRes = await clientesService.listar();
+      const clientes = clientesRes.data.clientes || [];
 
-  if (loading) return <div className="loading">⏳ Carregando dashboard...</div>;
+      const produtosEstoqueBaixo = produtos.filter(p => p.estoque < 20).length;
+
+      const statusMap = {};
+      pedidos.forEach(p => {
+        statusMap[p.status] = (statusMap[p.status] || 0) + 1;
+      });
+      const pedidosPorStatus = Object.entries(statusMap).map(([name, value]) => ({ name, value }));
+
+      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const vendasPorMes = meses.map((mes, index) => {
+        const total = pedidos
+          .filter(p => p.status === 'entregue' && new Date(p.criado_em).getMonth() === index)
+          .reduce((acc, p) => acc + (parseFloat(p.total) || 0), 0);
+        return { mes, vendas: total };
+      });
+
+      setStats({
+        totalProdutos: produtos.length,
+        totalPedidos: pedidos.length,
+        totalClientes: clientes.length,
+        produtosEstoqueBaixo,
+        pedidosPorStatus,
+        vendasPorMes
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dashboard:', error);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  if (carregando) {
+    return <div style={{ textAlign: 'center', padding: '50px' }}>Carregando dashboard...</div>;
+  }
 
   return (
     <div>
-      <div className="page-header">
-        <div>
-          <h2>Dashboard</h2>
-          <p>Bem-vindo ao sistema da Padaria WeCoffe 🥖</p>
+      <h1>📊 Dashboard</h1>
+      
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+        gap: '20px',
+        marginBottom: '30px'
+      }}>
+        <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
+          <h3>📦 Produtos</h3>
+          <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>{stats.totalProdutos}</p>
+          {stats.produtosEstoqueBaixo > 0 && (
+            <small style={{ color: '#c8841a' }}>⚠️ {stats.produtosEstoqueBaixo} com estoque baixo</small>
+          )}
+        </div>
+        
+        <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
+          <h3>🛒 Pedidos</h3>
+          <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>{stats.totalPedidos}</p>
+        </div>
+        
+        <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
+          <h3>👥 Clientes</h3>
+          <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>{stats.totalClientes}</p>
         </div>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">🍞</div>
-          <div className="stat-value">{stats.produtos}</div>
-          <div className="stat-label">Produtos Ativos</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">🛒</div>
-          <div className="stat-value">{stats.pedidos}</div>
-          <div className="stat-label">Total de Pedidos</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">👥</div>
-          <div className="stat-value">{stats.clientes}</div>
-          <div className="stat-label">Clientes</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">⏳</div>
-          <div className="stat-value">{stats.pendentes}</div>
-          <div className="stat-label">Pedidos em Aberto</div>
-        </div>
+      <div style={{ background: '#fff', padding: '20px', borderRadius: '10px', marginBottom: '30px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+        <h3>📈 Vendas por Mês</h3>
+        <BarChart width={800} height={300} data={stats.vendasPorMes} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="mes" />
+          <YAxis />
+          <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
+          <Legend />
+          <Bar dataKey="vendas" fill="#c8841a" name="Vendas (R$)" />
+        </BarChart>
       </div>
 
-      <div className="card">
-        <h3 style={{ marginBottom: 16 }}>Pedidos Recentes</h3>
-        {pedidosRecentes.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">📋</div>
-            <p>Nenhum pedido ainda</p>
-          </div>
-        ) : (
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Cliente</th>
-                  <th>Status</th>
-                  <th>Total</th>
-                  <th>Data</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pedidosRecentes.map(p => (
-                  <tr key={p.id}>
-                    <td><strong>#{p.id}</strong></td>
-                    <td>{p.cliente_nome || 'N/A'}</td>
-                    <td>{statusBadge(p.status)}</td>
-                    <td>R$ {Number(p.total).toFixed(2)}</td>
-                    <td>{new Date(p.criado_em).toLocaleDateString('pt-BR')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      <div className="card" style={{ marginTop: 20, background: '#fff8f0', borderColor: '#f0d0a0' }}>
-        <h3 style={{ marginBottom: 8 }}>💡 Sobre a Arquitetura deste Sistema</h3>
-        <p style={{ color: '#7a6055', fontSize: '0.9rem', lineHeight: 1.8 }}>
-          Este sistema usa <strong>Microsserviços</strong>: o backend está dividido em dois serviços independentes.
-          O <strong>serviço de Produtos</strong> (porta 3001) gerencia produtos e categorias.
-          O <strong>serviço de Pedidos</strong> (porta 3002) gerencia clientes e pedidos.
-          Cada serviço tem sua própria responsabilidade e pode ser escalado de forma independente.
-        </p>
-      </div>
+      {stats.pedidosPorStatus.length > 0 && (
+        <div style={{ background: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <h3>🥧 Pedidos por Status</h3>
+          <PieChart width={400} height={300}>
+            <Pie
+              data={stats.pedidosPorStatus}
+              cx={200}
+              cy={150}
+              labelLine={false}
+              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {stats.pedidosPorStatus.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </div>
+      )}
     </div>
   );
 }
