@@ -50,7 +50,6 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 
 ### Visão Geral
 
-```
                     ┌─────────────────┐
                     │    Frontend     │
                     │   React :3000   │
@@ -70,7 +69,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
                     │   PostgreSQL    │
                     │   :5432         │
                     └─────────────────┘
-```
+
 
 ### Vantagens dos Microsserviços
 
