@@ -489,25 +489,6 @@ O sistema utiliza **JSON Web Tokens** para autenticação:
 
 ---
 
-## ✅ Checklist de Entrega
-
-- [x] Sistema rodando com Docker Compose
-- [x] Frontend acessível em `localhost:3000`
-- [x] Login funcionando com JWT
-- [x] CRUD completo de produtos
-- [x] CRUD completo de pedidos
-- [x] CRUD completo de clientes
-- [x] CRUD completo de funcionários
-- [x] Paginação na listagem de produtos
-- [x] Filtro de busca por nome
-- [x] Dashboard com estatísticas
-- [x] Relatório de vendas por período
-- [x] Alteração de status dos pedidos
-- [x] Documentação completa
-- [x] Testes manuais realizados
-
----
-
 ## 👩‍💻 Desenvolvedor
 
 - **Nome:** Janaina Souza
