@@ -51,37 +51,14 @@ markdown
 
 ### Visão Geral
 
-+-------------------+
-| Frontend |
-| React :3000 |
-+--------+----------+
-|
-| API Calls
-|
-+--------+----------+----------+
-| | | |
-| v v v
-| +-----------+ +-----------+ +---------------+
-| | MS | | MS | | MS |
-| | PRODUTOS | | PEDIDOS | | FUNCIONARIOS |
-| | :3001 | | :3002 | | :3003 |
-| +-----+-----+ +-----+-----+ +-------+-------+
-| | | |
-| +-------------+---------------+
-| |
-| v
-| +-----------+---------+
-| | PostgreSQL |
-| | :5433/padaria_db |
-| +----------+----------+
-| |
-| v
-| +----------+----------+
-| | pgAdmin |
-| | :5050 |
-| +---------------------+
-|
-+------------------------------------------------+
+| Componente | Porta | Funcionalidade |
+|------------|-------|----------------|
+| **Frontend (React)** | 3000 | Interface do usuário |
+| **Microsserviço Produtos** | 3001 | CRUD produtos e categorias |
+| **Microsserviço Pedidos** | 3002 | CRUD pedidos, clientes e relatórios |
+| **Microsserviço Funcionários** | 3003 | CRUD funcionários |
+| **PostgreSQL** | 5433 | Banco de dados relacional |
+| **pgAdmin** | 5050 | Gerenciamento do banco |
 
 ### Vantagens dos Microsserviços
 
