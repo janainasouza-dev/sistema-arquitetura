@@ -1,6 +1,7 @@
+Aqui está o **README.md completamente corrigido e atualizado**:
 
-
-## 🥖 Padaria WeCoffe
+```markdown
+# 🥖 Padaria WeCoffe
 
 > **Sistema de Gestão com Microsserviços**  
 > Disciplina: Arquitetura de Software | 3º Período ADS
@@ -13,7 +14,7 @@
 
 ---
 
-##  Índice
+## 📋 Índice
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Arquitetura](#arquitetura)
@@ -31,21 +32,21 @@
 
 ---
 
-## Sobre o Projeto
+## 📖 Sobre o Projeto
 
 A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolvido com arquitetura baseada em **microsserviços**. O sistema permite gerenciar produtos, pedidos, clientes e funcionários de forma independente e escalável.
 
 ### Objetivos Educacionais
 
-- Aplicar conceitos de **Arquitetura de Software**
-- Implementar **microsserviços** com Node.js e Express
-- Utilizar **Docker** para containerização
-- Integrar **React** com múltiplos backends
-- Gerenciar **autenticação JWT** e comunicação entre serviços
+- ✅ Aplicar conceitos de **Arquitetura de Software**
+- ✅ Implementar **microsserviços** com Node.js e Express
+- ✅ Utilizar **Docker** para containerização
+- ✅ Integrar **React** com múltiplos backends
+- ✅ Gerenciar **autenticação JWT** e comunicação entre serviços
 
 ---
 
-##  Arquitetura
+## 🏗️ Arquitetura
 
 ### Visão Geral
 
@@ -88,50 +89,49 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 | **Deploys autônomos** | Atualiza sem parar todo o sistema |
 | **Tecnologias flexíveis** | Cada serviço usa a melhor ferramenta |
 
+---
 
-## Tecnologias
+## 💻 Tecnologias
 
 | Camada | Tecnologias |
 |--------|-------------|
-| **Frontend** | React 18, Axios, Recharts, React Router DOM |
+| **Frontend** | React 18, Axios, React Router DOM |
 | **Backend** | Node.js, Express, JWT, Bcrypt, Cors |
 | **Banco de Dados** | PostgreSQL 15 |
 | **Containerização** | Docker, Docker Compose |
 | **Gerenciamento** | pgAdmin |
 | **Versionamento** | Git, GitHub |
 
+---
 
-##  Pré-requisitos
+## ⚙️ Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
-
-
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (versão 20.10+)
 - [Git](https://git-scm.com/) (versão 2.30+)
-- Portas disponíveis: `3000`, `3001`, `3002`, `3003`, `5050`, `5432`
+- Portas disponíveis: `3000`, `3001`, `3002`, `3003`, `5050`, `5433`
 
+---
 
-##  Instalação e Execução
+## 🚀 Instalação e Execução
 
 ### 1. Clonar o repositório
 
-```
+```bash
 git clone https://github.com/janainasouza-dev/sistema-arquitetura.git
-
 cd sistema-arquitetura
 ```
 
 ### 2. Configurar variáveis de ambiente
 
-```
-# Criar arquivo .env dentro do frontend com o seguinte codigo: 
-
-
+```bash
+# Criar arquivo .env dentro do frontend
+cat > frontend/.env << 'EOF'
 REACT_APP_API_PRODUTOS=http://localhost:3001/api
 REACT_APP_API_PEDIDOS=http://localhost:3002/api
 REACT_APP_API_FUNCIONARIOS=http://localhost:3003/api
-
+EOF
 ```
 
 ### 3. Subir os contêineres
@@ -142,6 +142,9 @@ docker compose up -d --build
 
 # Execuções subsequentes
 docker compose start
+
+# Parar o sistema (mantém dados)
+docker compose stop
 ```
 
 ### 4. Acessar o sistema
@@ -153,6 +156,7 @@ docker compose start
 | **API Pedidos** | http://localhost:3002/health | - |
 | **API Funcionários** | http://localhost:3003/health | - |
 | **pgAdmin** | http://localhost:5050 | admin@pgadmin.com / admin |
+| **PostgreSQL** | localhost:5433 | padaria_user / padaria123 |
 
 ### 5. Configurar conexão no pgAdmin
 
@@ -330,68 +334,75 @@ GROUP BY pr.id ORDER BY quantidade_vendida DESC LIMIT 10;
 ```
 
 ---
-```
-🔌 API Endpoints
-Microsserviço de Produtos (:3001)
-Método	Endpoint	Descrição	
-POST	/api/auth/login	Autenticação	
-POST	/api/auth/registrar	Registrar usuário	
-GET	/api/auth/me	Dados do usuário	
-GET	/api/produtos	Listar produtos (com paginação/busca)	
-GET	/api/produtos/:id	Buscar produto	
-POST	/api/produtos	Criar produto	
-PUT	/api/produtos/:id	Atualizar produto	
-DELETE	/api/produtos/:id	Remover produto	
-GET	/api/categorias	Listar categorias	
-POST	/api/categorias	Criar categoria	
 
-Microsserviço de Pedidos (:3002)
+## 🔌 API Endpoints
 
-Método	Endpoint	Descrição	
-GET	/api/pedidos	Listar pedidos	
-GET	/api/pedidos/:id	Buscar pedido	
-POST	/api/pedidos	Criar pedido	
-PATCH	/api/pedidos/:id/status	Atualizar status	
-GET	/api/pedidos/relatorio	Relatório de vendas	
-GET	/api/clientes	Listar clientes	
-POST	/api/clientes	Criar cliente	
-PUT	/api/clientes/:id	Atualizar cliente	
+### Microsserviço de Produtos (:3001)
 
-Microsserviço de Funcionários (:3003)
+| Método | Endpoint | Descrição | Autenticação |
+|--------|----------|-----------|--------------|
+| POST | `/api/auth/login` | Autenticação | ❌ |
+| POST | `/api/auth/registrar` | Registrar usuário | ❌ |
+| GET | `/api/auth/me` | Dados do usuário | ✅ |
+| GET | `/api/produtos` | Listar produtos (com paginação/busca) | ✅ |
+| GET | `/api/produtos/:id` | Buscar produto | ✅ |
+| POST | `/api/produtos` | Criar produto | ✅ |
+| PUT | `/api/produtos/:id` | Atualizar produto | ✅ |
+| DELETE | `/api/produtos/:id` | Remover produto | ✅ |
+| GET | `/api/categorias` | Listar categorias | ✅ |
+| POST | `/api/categorias` | Criar categoria | ✅ |
 
-Método	Endpoint	Descrição	
-GET	/api/funcionarios	Listar funcionários	
-GET	/api/funcionarios/:id	Buscar funcionário	
-POST	/api/funcionarios	Criar funcionário	
-PUT	/api/funcionarios/:id	Atualizar funcionário	
-DELETE	/api/funcionarios/:id	Remover funcionário	
-```
+### Microsserviço de Pedidos (:3002)
+
+| Método | Endpoint | Descrição | Autenticação |
+|--------|----------|-----------|--------------|
+| GET | `/api/pedidos` | Listar pedidos | ✅ |
+| GET | `/api/pedidos/:id` | Buscar pedido | ✅ |
+| POST | `/api/pedidos` | Criar pedido | ✅ |
+| PATCH | `/api/pedidos/:id/status` | Atualizar status | ✅ |
+| GET | `/api/pedidos/relatorio` | Relatório de vendas | ✅ |
+| GET | `/api/clientes` | Listar clientes | ✅ |
+| POST | `/api/clientes` | Criar cliente | ✅ |
+| PUT | `/api/clientes/:id` | Atualizar cliente | ✅ |
+
+### Microsserviço de Funcionários (:3003)
+
+| Método | Endpoint | Descrição | Autenticação |
+|--------|----------|-----------|--------------|
+| GET | `/api/funcionarios` | Listar funcionários | ✅ |
+| GET | `/api/funcionarios/:id` | Buscar funcionário | ✅ |
+| POST | `/api/funcionarios` | Criar funcionário | ✅ |
+| PUT | `/api/funcionarios/:id` | Atualizar funcionário | ✅ |
+| DELETE | `/api/funcionarios/:id` | Remover funcionário | ✅ |
 
 ---
 
 ## ✨ Funcionalidades
 
 ### Nível 1 — Banco de Dados ✅
-- Conexão PostgreSQL via Docker
-- Tabelas normalizadas
-- Relacionamentos entre entidades
+- [x] Conexão PostgreSQL via Docker
+- [x] Tabelas normalizadas
+- [x] Relacionamentos entre entidades
 
 ### Nível 2 — Backend ✅
-- 3 microsserviços independentes
-- CRUD completo para todas entidades
-- Autenticação JWT
-- CORS configurado
+- [x] 3 microsserviços independentes
+- [x] CRUD completo para todas entidades
+- [x] Autenticação JWT
+- [x] CORS configurado
+- [x] Rotas de relatórios
 
 ### Nível 3 — Frontend ✅
-- Paginação na listagem de produtos
-- Filtro de busca por nome/descrição
-- Dashboard com gráficos (Recharts)
-- Relatório de vendas por período
-- Interface responsiva
+- [x] Paginação na listagem de produtos
+- [x] Filtro de busca por nome/descrição
+- [x] Dashboard com estatísticas
+- [x] Relatório de vendas por período
+- [x] Interface responsiva
+- [x] Alteração de status dos pedidos (pendente → pago → entregue)
+- [x] CRUD completo de funcionários (com turno e salário)
 
 ---
 
-## 🐳 Comandos Docker
+## 🐳 Comandos Úteis
 
 ### Gerenciamento
 
@@ -405,7 +416,10 @@ docker compose start
 # Parar serviços (mantém dados)
 docker compose stop
 
-# Parar e remover tudo
+# Parar e remover containers (mantém dados)
+docker compose down
+
+# Parar e remover TUDO (inclusive dados do banco)
 docker compose down -v
 
 # Ver status
@@ -416,7 +430,7 @@ docker compose logs -f
 
 # Logs de serviço específico
 docker compose logs -f frontend
-docker compose logs -f backend-produtos
+docker compose logs -f backend-pedidos
 ```
 
 ### Diagnóstico
@@ -432,8 +446,20 @@ curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@padaria.com","senha":"1234"}'
 
+# Testar relatório de vendas
+TOKEN=$(curl -s -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@padaria.com","senha":"1234"}' | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+
+curl -X GET "http://localhost:3002/api/pedidos/relatorio?dataInicio=2026-01-01&dataFim=2026-12-31" \
+  -H "Authorization: Bearer $TOKEN"
+
 # Acessar banco diretamente
 docker compose exec postgres psql -U padaria_user -d padaria_db
+
+# Corrigir sequência de IDs de funcionários
+docker compose exec postgres psql -U padaria_user -d padaria_db -c \
+  "SELECT setval('funcionarios_id_seq', (SELECT COALESCE(MAX(id), 0) FROM funcionarios));"
 
 # Backup do banco
 docker compose exec postgres pg_dump -U padaria_user padaria_db > backup.sql
@@ -468,16 +494,21 @@ O sistema utiliza **JSON Web Tokens** para autenticação:
 
 ---
 
-## Solução de Problemas
+## 🐛 Solução de Problemas
 
 | Problema | Solução |
 |----------|---------|
 | **CORS error** | Verificar `app.use(cors())` no backend |
 | **401 Unauthorized** | Fazer login novamente para gerar novo token |
-| **Token inválido** | Limpar localStorage e relogar |
+| **Token inválido** | `localStorage.clear(); window.location.href = '/login'` |
 | **Porta em uso** | `sudo lsof -ti:3000 \| xargs kill -9` |
 | **Banco não conecta** | `docker compose restart postgres` |
 | **Frontend não compila** | `docker compose build --no-cache frontend` |
+| **Clientes não aparecem no Dashboard** | Verificar se API retorna `clientes` ou `dados` |
+| **Categorias não listam** | Usar `res.data.categorias` em vez de `res.data.dados` |
+| **Relatório não carrega** | Verificar se `relatorioVendas` está no controller |
+| **Funcionários somem ao sair da aba** | Verificar `useEffect` e `carregarFuncionarios()` |
+| **db.getClient is not a function** | Substituir por `db.query()` no controller |
 
 ---
 
@@ -488,11 +519,24 @@ O sistema utiliza **JSON Web Tokens** para autenticação:
 - [x] Login funcionando com JWT
 - [x] CRUD completo de produtos
 - [x] CRUD completo de pedidos
-- [x] Paginação na listagem
-- [x] Filtro de busca
-- [x] Dashboard com gráficos
+- [x] CRUD completo de clientes
+- [x] CRUD completo de funcionários
+- [x] Paginação na listagem de produtos
+- [x] Filtro de busca por nome
+- [x] Dashboard com estatísticas
 - [x] Relatório de vendas por período
+- [x] Alteração de status dos pedidos
 - [x] Documentação completa
+- [x] Testes manuais realizados
+
+---
+
+## 👩‍💻 Desenvolvedor
+
+- **Nome:** Janaina Souza
+- **Disciplina:** Arquitetura de Software
+- **Período:** 3º Período ADS
+- **GitHub:** [janainasouza-dev](https://github.com/janainasouza-dev)
 
 ---
 
@@ -502,19 +546,17 @@ Este projeto foi desenvolvido para **fins educacionais** como parte da disciplin
 
 ---
 
-*Última atualização: Maio/2026*
+*Última atualização: Junho/2026*
 ```
 
 ---
 
-## 📝 Principais melhorias aplicadas:
+## 📝 **Para salvar no VS Code:**
 
-1. **Estrutura clara com emojis e badges** - Mais atrativo e profissional
-2. **Índice navegável** - Facilita localização das seções
-3. **Tabelas** - Para vantagens, tecnologias, endpoints e soluções de problemas
-4. **Formatação consistente** - Códigos, comandos e blocos bem organizados
-5. **Checklist visual** - Com emojis e caixas de seleção
-6. **Seção de badges** - Mostra tecnologias e status do projeto
-7. **Cabeçalho com destaque** - Nome do projeto em destaque
-8. **Organização hierárquica** - De informações gerais para específicas
+1. **Selecione todo o código acima**
+2. **Copie (Ctrl + C)**
+3. **Abra o arquivo `README.md` na raiz do projeto**
+4. **Cole (Ctrl + V)**
+5. **Salve (Ctrl + S)**
 
+O VS Code vai reconhecer automaticamente a formatação Markdown e mostrar a prévia bonita! 🚀
