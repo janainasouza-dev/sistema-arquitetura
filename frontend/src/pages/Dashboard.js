@@ -1,11 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-  Tooltip, Legend, PieChart, Pie, Cell 
-} from 'recharts';
-import { produtosService, pedidosService, clientesService } from '../services/api';
-
-const COLORS = ['#c8841a', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+import React, { useState, useEffect } from "react";
+import { produtosService, pedidosService, clientesService } from "../services/api";
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -13,124 +7,75 @@ export default function Dashboard() {
     totalPedidos: 0,
     totalClientes: 0,
     produtosEstoqueBaixo: 0,
-    pedidosPorStatus: [],
-    vendasPorMes: []
+    pedidosPendentes: 0
   });
-  const [carregando, setCarregando] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    carregarDashboard();
+  useEffect(() => { 
+    carregarDashboard(); 
   }, []);
 
   const carregarDashboard = async () => {
     try {
-      const produtosRes = await produtosService.listar({ limit: 1000 });
-      const produtos = produtosRes.data.produtos || [];
+      const [prodRes, pedRes, cliRes] = await Promise.all([
+        produtosService.listar(),
+        pedidosService.listar(),
+        clientesService.listar()
+      ]);
       
-      const pedidosRes = await pedidosService.listar();
-      const pedidos = pedidosRes.data.pedidos || [];
+      const produtos = prodRes.data.produtos || [];
+      const pedidos = pedRes.data.pedidos || [];
+      const clientes = cliRes.data.clientes || cliRes.data.dados || [];
       
-      const clientesRes = await clientesService.listar();
-      const clientes = clientesRes.data.clientes || [];
-
       const produtosEstoqueBaixo = produtos.filter(p => p.estoque < 20).length;
-
-      const statusMap = {};
-      pedidos.forEach(p => {
-        statusMap[p.status] = (statusMap[p.status] || 0) + 1;
-      });
-      const pedidosPorStatus = Object.entries(statusMap).map(([name, value]) => ({ name, value }));
-
-      const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const vendasPorMes = meses.map((mes, index) => {
-        const total = pedidos
-          .filter(p => p.status === 'entregue' && new Date(p.criado_em).getMonth() === index)
-          .reduce((acc, p) => acc + (parseFloat(p.total) || 0), 0);
-        return { mes, vendas: total };
-      });
-
+      const pedidosPendentes = pedidos.filter(p => p.status === "pendente").length;
+      
       setStats({
         totalProdutos: produtos.length,
         totalPedidos: pedidos.length,
         totalClientes: clientes.length,
         produtosEstoqueBaixo,
-        pedidosPorStatus,
-        vendasPorMes
+        pedidosPendentes
       });
     } catch (error) {
-      console.error('Erro ao carregar dashboard:', error);
+      console.error("Erro ao carregar dashboard:", error);
     } finally {
-      setCarregando(false);
+      setLoading(false);
     }
   };
 
-  if (carregando) {
-    return <div style={{ textAlign: 'center', padding: '50px' }}>Carregando dashboard...</div>;
-  }
+  if (loading) return <div style={{ textAlign: "center", padding: "50px" }}>Carregando dashboard...</div>;
 
   return (
     <div>
-      <h1>📊 Dashboard</h1>
-      
+      <h1 style={{ marginBottom: "20px" }}>📊 Dashboard</h1>
       <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '20px',
-        marginBottom: '30px'
+        display: "grid", 
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", 
+        gap: "20px" 
       }}>
-        <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
-          <h3>📦 Produtos</h3>
-          <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>{stats.totalProdutos}</p>
-          {stats.produtosEstoqueBaixo > 0 && (
-            <small style={{ color: '#c8841a' }}>⚠️ {stats.produtosEstoqueBaixo} com estoque baixo</small>
-          )}
+        <div style={{ background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "white", padding: "20px", borderRadius: "10px", textAlign: "center" }}>
+          <h3 style={{ margin: 0 }}>📦 Produtos</h3>
+          <p style={{ fontSize: "32px", fontWeight: "bold", margin: "10px 0" }}>{stats.totalProdutos}</p>
+          {stats.produtosEstoqueBaixo > 0 && <small>⚠️ {stats.produtosEstoqueBaixo} com estoque baixo</small>}
         </div>
         
-        <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
-          <h3>🛒 Pedidos</h3>
-          <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>{stats.totalPedidos}</p>
+        <div style={{ background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", color: "white", padding: "20px", borderRadius: "10px", textAlign: "center" }}>
+          <h3 style={{ margin: 0 }}>🛒 Pedidos</h3>
+          <p style={{ fontSize: "32px", fontWeight: "bold", margin: "10px 0" }}>{stats.totalPedidos}</p>
+          <small>{stats.pedidosPendentes} pendentes</small>
         </div>
         
-        <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
-          <h3>👥 Clientes</h3>
-          <p style={{ fontSize: '32px', fontWeight: 'bold', margin: '10px 0' }}>{stats.totalClientes}</p>
+        <div style={{ background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", color: "white", padding: "20px", borderRadius: "10px", textAlign: "center" }}>
+          <h3 style={{ margin: 0 }}>👥 Clientes</h3>
+          <p style={{ fontSize: "32px", fontWeight: "bold", margin: "10px 0" }}>{stats.totalClientes}</p>
+        </div>
+        
+        <div style={{ background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)", color: "white", padding: "20px", borderRadius: "10px", textAlign: "center" }}>
+          <h3 style={{ margin: 0 }}>💰 Total</h3>
+          <p style={{ fontSize: "32px", fontWeight: "bold", margin: "10px 0" }}>R$ 0</p>
         </div>
       </div>
-
-      <div style={{ background: '#fff', padding: '20px', borderRadius: '10px', marginBottom: '30px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <h3>📈 Vendas por Mês</h3>
-        <BarChart width={800} height={300} data={stats.vendasPorMes} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="mes" />
-          <YAxis />
-          <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
-          <Legend />
-          <Bar dataKey="vendas" fill="#c8841a" name="Vendas (R$)" />
-        </BarChart>
-      </div>
-
-      {stats.pedidosPorStatus.length > 0 && (
-        <div style={{ background: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          <h3>🥧 Pedidos por Status</h3>
-          <PieChart width={400} height={300}>
-            <Pie
-              data={stats.pedidosPorStatus}
-              cx={200}
-              cy={150}
-              labelLine={false}
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {stats.pedidosPorStatus.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </div>
-      )}
     </div>
   );
 }

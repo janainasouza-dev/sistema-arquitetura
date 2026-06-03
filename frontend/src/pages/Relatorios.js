@@ -17,6 +17,7 @@ export default function Relatorios() {
     setCarregando(true);
     try {
       const response = await pedidosService.relatorioVendas(dataInicio, dataFim);
+      console.log("API retornou:", response.data);
       setRelatorio(response.data);
     } catch (error) {
       console.error('Erro:', error);
@@ -67,54 +68,59 @@ export default function Relatorios() {
 
       {relatorio && (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-            <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px', marginBottom: '30px' }}>
+            <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
               <h3>💰 Total Vendas</h3>
-              <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#c8841a' }}>
-                R$ {relatorio.resumo.total_vendas.toFixed(2)}
+              <p style={{ fontSize: '28px', fontWeight: 'bold' }}>
+                R$ {relatorio.resumo?.total_vendas?.toFixed(2) || 0}
               </p>
             </div>
-            <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
+            <div style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white', padding: '20px', borderRadius: '15px', textAlign: 'center' }}>
               <h3>📦 Total Pedidos</h3>
-              <p style={{ fontSize: '28px', fontWeight: 'bold' }}>{relatorio.resumo.total_pedidos}</p>
-            </div>
-            <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '10px', textAlign: 'center' }}>
-              <h3>👥 Clientes Atendidos</h3>
-              <p style={{ fontSize: '28px', fontWeight: 'bold' }}>{relatorio.resumo.total_clientes}</p>
+              <p style={{ fontSize: '28px', fontWeight: 'bold' }}>
+                {relatorio.resumo?.total_pedidos || 0}
+              </p>
             </div>
           </div>
 
           <div style={{ background: '#fff', padding: '20px', borderRadius: '10px', marginBottom: '30px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3>Vendas Diárias</h3>
-            <BarChart width={800} height={300} data={relatorio.relatorio} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <h3>📊 Vendas Diárias</h3>
+            <BarChart width={800} height={300} data={relatorio.relatorio || []} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="data" />
+              <XAxis dataKey="data" tickFormatter={(value) => new Date(value).toLocaleDateString('pt-BR')} />
               <YAxis />
-              <Tooltip formatter={(value) => `R$ ${parseFloat(value).toFixed(2)}`} />
+              <Tooltip formatter={(value) => `R$ ${parseFloat(value).toFixed(2)}`} labelFormatter={(label) => new Date(label).toLocaleDateString('pt-BR')} />
               <Legend />
               <Bar dataKey="valor_total" fill="#c8841a" name="Valor (R$)" />
             </BarChart>
           </div>
 
           <div style={{ background: '#fff', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <h3>🥖 Produtos Mais Vendidos</h3>
+            <h3>📋 Detalhamento por Dia</h3>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f5f5f5' }}>
-                  <th style={{ padding: '12px', textAlign: 'left' }}>Produto</th>
-                  <th style={{ padding: '12px', textAlign: 'right' }}>Quantidade</th>
-                  <th style={{ padding: '12px', textAlign: 'right' }}>Total Vendido</th>
+                  <th style={{ padding: '12px', textAlign: 'left' }}>Data</th>
+                  <th style={{ padding: '12px', textAlign: 'right' }}>Pedidos</th>
+                  <th style={{ padding: '12px', textAlign: 'right' }}>Valor</th>
                 </tr>
               </thead>
               <tbody>
-                {relatorio.produtos_mais_vendidos.map((produto, index) => (
+                {relatorio.relatorio?.map((item, index) => (
                   <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '12px' }}>{produto.nome}</td>
-                    <td style={{ padding: '12px', textAlign: 'right' }}>{produto.quantidade_vendida}</td>
-                    <td style={{ padding: '12px', textAlign: 'right' }}>R$ {parseFloat(produto.total_vendido).toFixed(2)}</td>
+                    <td style={{ padding: '12px' }}>{new Date(item.data).toLocaleDateString('pt-BR')}</td>
+                    <td style={{ padding: '12px', textAlign: 'right' }}>{item.total_pedidos}</td>
+                    <td style={{ padding: '12px', textAlign: 'right' }}>R$ {parseFloat(item.valor_total).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr style={{ background: '#f5f5f5', fontWeight: 'bold' }}>
+                  <td style={{ padding: '12px' }}>Total</td>
+                  <td style={{ padding: '12px', textAlign: 'right' }}>{relatorio.resumo?.total_pedidos || 0}</td>
+                  <td style={{ padding: '12px', textAlign: 'right' }}>R$ {relatorio.resumo?.total_vendas?.toFixed(2) || 0}</td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>

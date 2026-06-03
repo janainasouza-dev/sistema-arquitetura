@@ -1,92 +1,100 @@
-// src/pages/Categorias.js
-import React, { useEffect, useState } from 'react';
-import { categoriasService } from '../services/api';
+import React, { useState, useEffect } from "react";
+import { categoriasService } from "../services/api";
 
 export default function Categorias() {
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(false);
-  const [form, setForm] = useState({ nome: '', descricao: '' });
-  const [mensagem, setMensagem] = useState(null);
+  const [form, setForm] = useState({ nome: "", descricao: "" });
 
-  const carregar = async () => {
+  useEffect(() => { 
+    carregarCategorias(); 
+  }, []);
+
+  const carregarCategorias = async () => {
     try {
       const res = await categoriasService.listar();
-      setCategorias(res.data.dados || []);
+      console.log("API retornou:", res.data);
+      setCategorias(res.data.categorias || []);
+    } catch (error) {
+      console.error("Erro ao carregar categorias:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { carregar(); }, []);
-
-  const salvar = async () => {
+  const salvarCategoria = async () => {
+    if (!form.nome) {
+      alert("Nome da categoria é obrigatório");
+      return;
+    }
     try {
       await categoriasService.criar(form);
-      setMensagem({ texto: 'Categoria criada!', tipo: 'success' });
       setModal(false);
-      setForm({ nome: '', descricao: '' });
-      carregar();
-    } catch {
-      setMensagem({ texto: 'Erro ao criar categoria.', tipo: 'danger' });
+      setForm({ nome: "", descricao: "" });
+      carregarCategorias();
+      alert("Categoria criada com sucesso!");
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao criar categoria");
     }
-    setTimeout(() => setMensagem(null), 3000);
   };
 
-  if (loading) return <div className="loading">⏳ Carregando categorias...</div>;
+  if (loading) return <div style={{ textAlign: "center", padding: "50px" }}>Carregando categorias...</div>;
 
   return (
     <div>
-      <div className="page-header">
-        <div>
-          <h2>🏷️ Categorias</h2>
-          <p>{categorias.length} categorias cadastradas</p>
-        </div>
-        <button className="btn btn-primary" onClick={() => setModal(true)}>+ Nova Categoria</button>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <h2>🏷️ Categorias</h2>
+        <button onClick={() => setModal(true)} style={{ padding: "10px 20px", background: "#c8841a", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+          + Nova Categoria
+        </button>
       </div>
 
-      {mensagem && <div className={`alert alert-${mensagem.tipo}`}>{mensagem.texto}</div>}
-
-      <div className="card">
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Criado em</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categorias.map(c => (
-                <tr key={c.id}>
-                  <td>{c.id}</td>
-                  <td><strong>{c.nome}</strong></td>
-                  <td>{c.descricao || '-'}</td>
-                  <td>{new Date(c.criado_em).toLocaleDateString('pt-BR')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <table style={{ width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: "10px", overflow: "hidden" }}>
+        <thead>
+          <tr style={{ background: "#c8841a", color: "white" }}>
+            <th style={{ padding: "12px" }}>ID</th>
+            <th style={{ padding: "12px" }}>Nome</th>
+            <th style={{ padding: "12px" }}>Descrição</th>
+           </tr>
+        </thead>
+        <tbody>
+          {categorias.map(cat => (
+            <tr key={cat.id} style={{ borderBottom: "1px solid #eee" }}>
+              <td style={{ padding: "12px" }}>{cat.id}</td>
+              <td style={{ padding: "12px" }}><strong>{cat.nome}</strong></td>
+              <td style={{ padding: "12px" }}>{cat.descricao || "-"}</td>
+            </tr>
+          ))}
+          {categorias.length === 0 && (
+            <tr>
+              <td colSpan="3" style={{ textAlign: "center", padding: "50px" }}>Nenhuma categoria encontrada</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
       {modal && (
-        <div className="modal-overlay" onClick={() => setModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }} onClick={() => setModal(false)}>
+          <div style={{ background: "white", padding: "20px", borderRadius: "10px", width: "400px" }} onClick={e => e.stopPropagation()}>
             <h3>Nova Categoria</h3>
-            <div className="form-group">
-              <label>Nome *</label>
-              <input value={form.nome} onChange={e => setForm({...form, nome: e.target.value})} placeholder="Ex: Tortas" />
-            </div>
-            <div className="form-group">
-              <label>Descrição</label>
-              <textarea rows={2} value={form.descricao} onChange={e => setForm({...form, descricao: e.target.value})} />
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setModal(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={salvar}>Salvar</button>
+            <input 
+              type="text" 
+              placeholder="Nome *" 
+              value={form.nome} 
+              onChange={e => setForm({ ...form, nome: e.target.value })} 
+              style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ddd" }} 
+            />
+            <textarea 
+              placeholder="Descrição" 
+              value={form.descricao} 
+              onChange={e => setForm({ ...form, descricao: e.target.value })} 
+              style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px", border: "1px solid #ddd" }} 
+            />
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+              <button onClick={() => setModal(false)} style={{ padding: "10px 20px", background: "#999", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>Cancelar</button>
+              <button onClick={salvarCategoria} style={{ padding: "10px 20px", background: "#c8841a", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>Salvar</button>
             </div>
           </div>
         </div>
