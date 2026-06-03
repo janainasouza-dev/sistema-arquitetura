@@ -330,7 +330,7 @@ GROUP BY pr.id ORDER BY quantidade_vendida DESC LIMIT 10;
 ```
 
 ---
-
+```
 🔌 API Endpoints
 Microsserviço de Produtos (:3001)
 Método	Endpoint	Descrição	
@@ -365,7 +365,7 @@ GET	/api/funcionarios/:id	Buscar funcionário
 POST	/api/funcionarios	Criar funcionário	
 PUT	/api/funcionarios/:id	Atualizar funcionário	
 DELETE	/api/funcionarios/:id	Remover funcionário	
-
+```
 
 ---
 
