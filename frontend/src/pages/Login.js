@@ -408,9 +408,7 @@ export default function Login({ onLogin }) {
             )}
           </button>
 
-          <div className="login-hint">
-            <strong>Demo:</strong> admin@padaria.com / 1234
-          </div>
+          
         </div>
       </div>
     </>
