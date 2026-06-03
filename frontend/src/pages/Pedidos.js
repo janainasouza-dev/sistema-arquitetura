@@ -1,8 +1,7 @@
-// src/pages/Pedidos.js
-import React, { useEffect, useState } from 'react';
-import { pedidosService, clientesService, produtosService } from '../services/api';
+import React, { useEffect, useState } from "react";
+import { pedidosService, clientesService, produtosService } from "../services/api";
 
-const STATUS_OPTIONS = ['pendente', 'em_preparo', 'pronto', 'entregue', 'cancelado'];
+const STATUS_OPTIONS = ["pendente", "pago", "entregue", "cancelado"];
 
 export default function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -13,21 +12,26 @@ export default function Pedidos() {
   const [detalheId, setDetalheId] = useState(null);
   const [detalhe, setDetalhe] = useState(null);
   const [mensagem, setMensagem] = useState(null);
-  const [filtrando, setFiltrando] = useState('');
-
-  // Form de novo pedido
-  const [novoForm, setNovoForm] = useState({ cliente_id: '', observacao: '', itens: [] });
+  const [filtrando, setFiltrando] = useState("");
+  const [novoForm, setNovoForm] = useState({ cliente_id: "", observacao: "", itens: [] });
 
   const carregar = async () => {
     try {
       const [rPed, rCli, rProd] = await Promise.all([
         pedidosService.listar(),
         clientesService.listar(),
-        produtosService.listar({ ativo: true }),
+        produtosService.listar(),
       ]);
-      setPedidos(rPed.data.dados || []);
-      setClientes(rCli.data.dados || []);
-      setProdutos(rProd.data.dados || []);
+      
+      console.log("=== DEBUG PEDIDOS ===");
+      console.log("Clientes recebidos:", rCli.data);
+      console.log("Produtos recebidos:", rProd.data);
+      
+      setPedidos(rPed.data.pedidos || []);
+      setClientes(rCli.data.clientes || []);
+      setProdutos(rProd.data.produtos || []);
+    } catch (error) {
+      console.error("Erro ao carregar:", error);
     } finally {
       setLoading(false);
     }
@@ -35,63 +39,46 @@ export default function Pedidos() {
 
   useEffect(() => { carregar(); }, []);
 
-  const verDetalhe = async (id) => {
-    try {
-      const res = await pedidosService.buscarPorId(id);
-      setDetalhe(res.data.dados);
-      setDetalheId(id);
-    } catch {
-      exibirMensagem('Erro ao carregar pedido.', 'danger');
-    }
-  };
-
-  const atualizarStatus = async (id, status) => {
-    try {
-      await pedidosService.atualizarStatus(id, status);
-      exibirMensagem('Status atualizado!', 'success');
-      carregar();
-      if (detalheId === id) verDetalhe(id);
-    } catch {
-      exibirMensagem('Erro ao atualizar status.', 'danger');
-    }
-  };
-
   const adicionarItem = () => {
-    setNovoForm(prev => ({
+    setNovoForm((prev) => ({
       ...prev,
-      itens: [...prev.itens, { produto_id: '', quantidade: 1, preco_unitario: 0 }]
+      itens: [...prev.itens, { produto_id: "", quantidade: 1, preco_unitario: 0 }],
     }));
   };
 
   const atualizarItem = (index, campo, valor) => {
     const itens = [...novoForm.itens];
     itens[index][campo] = valor;
-    if (campo === 'produto_id') {
-      const prod = produtos.find(p => p.id === Number(valor));
-      if (prod) itens[index].preco_unitario = prod.preco;
+    if (campo === "produto_id") {
+      const prod = produtos.find((p) => p.id === Number(valor));
+      if (prod) itens[index].preco_unitario = parseFloat(prod.preco);
     }
-    setNovoForm(prev => ({ ...prev, itens }));
+    setNovoForm((prev) => ({ ...prev, itens }));
   };
 
   const removerItem = (index) => {
-    setNovoForm(prev => ({ ...prev, itens: prev.itens.filter((_, i) => i !== index) }));
+    setNovoForm((prev) => ({
+      ...prev,
+      itens: prev.itens.filter((_, i) => i !== index),
+    }));
   };
 
-  const totalNovoPedido = novoForm.itens.reduce((acc, item) => acc + (item.quantidade * item.preco_unitario), 0);
+  const totalNovoPedido = novoForm.itens.reduce((acc, item) => acc + item.quantidade * item.preco_unitario, 0);
 
   const salvarPedido = async () => {
     if (!novoForm.cliente_id || novoForm.itens.length === 0) {
-      exibirMensagem('Selecione o cliente e adicione pelo menos um item.', 'danger');
+      alert("Selecione o cliente e adicione pelo menos um item");
       return;
     }
     try {
       await pedidosService.criar(novoForm);
-      exibirMensagem('Pedido criado com sucesso!', 'success');
+      alert("Pedido criado com sucesso!");
       setModal(false);
-      setNovoForm({ cliente_id: '', observacao: '', itens: [] });
+      setNovoForm({ cliente_id: "", observacao: "", itens: [] });
       carregar();
-    } catch {
-      exibirMensagem('Erro ao criar pedido.', 'danger');
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao criar pedido");
     }
   };
 
@@ -100,136 +87,86 @@ export default function Pedidos() {
     setTimeout(() => setMensagem(null), 3000);
   };
 
-  const pedidosFiltrados = filtrando ? pedidos.filter(p => p.status === filtrando) : pedidos;
-
-  if (loading) return <div className="loading">⏳ Carregando pedidos...</div>;
+  if (loading) return <div style={{ textAlign: "center", padding: "50px" }}>⏳ Carregando...</div>;
 
   return (
     <div>
-      <div className="page-header">
-        <div>
-          <h2>🛒 Pedidos</h2>
-          <p>{pedidos.length} pedidos no total</p>
-        </div>
-        <button className="btn btn-primary" onClick={() => setModal(true)}>+ Novo Pedido</button>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
+        <h2>🛒 Pedidos</h2>
+        <button onClick={() => setModal(true)} style={{ padding: "10px 20px", background: "#c8841a", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
+          + Novo Pedido
+        </button>
       </div>
 
-      {mensagem && <div className={`alert alert-${mensagem.tipo}`}>{mensagem.texto}</div>}
+      {mensagem && (
+        <div style={{ padding: "10px", marginBottom: "20px", borderRadius: "5px", background: mensagem.tipo === "success" ? "#d4edda" : "#f8d7da", color: mensagem.tipo === "success" ? "#155724" : "#721c24" }}>
+          {mensagem.texto}
+        </div>
+      )}
 
-      {/* Filtro de status */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-        <button className={`btn btn-sm ${filtrando === '' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFiltrando('')}>Todos</button>
-        {STATUS_OPTIONS.map(s => (
-          <button key={s} className={`btn btn-sm ${filtrando === s ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFiltrando(s)}>
-            {s.replace('_', ' ')}
+      <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+        <button onClick={() => setFiltrando("")} style={{ padding: "5px 10px", cursor: "pointer", background: filtrando === "" ? "#c8841a" : "#eee" }}>Todos</button>
+        {STATUS_OPTIONS.map((s) => (
+          <button key={s} onClick={() => setFiltrando(s)} style={{ padding: "5px 10px", cursor: "pointer", background: filtrando === s ? "#c8841a" : "#eee" }}>
+            {s}
           </button>
         ))}
       </div>
 
-      <div style={{ display: 'grid', gap: 12 }}>
-        {pedidosFiltrados.map(p => (
-          <div className="card" key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <strong>Pedido #{p.id}</strong> — {p.cliente_nome || 'Cliente não encontrado'}
-              <span style={{ marginLeft: 12 }} className={`badge badge-${p.status}`}>{p.status.replace('_', ' ')}</span>
-              <div style={{ fontSize: '0.8rem', color: '#7a6055', marginTop: 2 }}>
-                {new Date(p.criado_em).toLocaleString('pt-BR')} · R$ {Number(p.total).toFixed(2)}
-              </div>
-              {p.observacao && <div style={{ fontSize: '0.8rem', fontStyle: 'italic', marginTop: 2 }}>Obs: {p.observacao}</div>}
-            </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <select
-                className="btn btn-secondary btn-sm"
-                value={p.status}
-                onChange={e => atualizarStatus(p.id, e.target.value)}
-                style={{ cursor: 'pointer' }}
-              >
-                {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
-              </select>
-              <button className="btn btn-secondary btn-sm" onClick={() => verDetalhe(p.id)}>🔍 Detalhes</button>
-            </div>
-          </div>
-        ))}
-        {pedidosFiltrados.length === 0 && (
-          <div className="empty-state"><div className="empty-icon">🛒</div><p>Nenhum pedido encontrado</p></div>
-        )}
-      </div>
-
-      {/* Modal: Detalhes do pedido */}
-      {detalheId && detalhe && (
-        <div className="modal-overlay" onClick={() => { setDetalheId(null); setDetalhe(null); }}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>Pedido #{detalhe.id}</h3>
-            <p><strong>Cliente:</strong> {detalhe.cliente_nome}</p>
-            <p><strong>Status:</strong> <span className={`badge badge-${detalhe.status}`}>{detalhe.status}</span></p>
-            {detalhe.observacao && <p><strong>Obs:</strong> {detalhe.observacao}</p>}
-            <hr style={{ margin: '16px 0', borderColor: '#e8d5c0' }} />
-            <h4 style={{ marginBottom: 10 }}>Itens</h4>
-            {(detalhe.itens || []).map(item => (
-              <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #f0e0d0' }}>
-                <span>{item.produto_nome} x{item.quantidade}</span>
-                <span>R$ {Number(item.subtotal).toFixed(2)}</span>
-              </div>
-            ))}
-            <div style={{ textAlign: 'right', marginTop: 12, fontWeight: 700, fontSize: '1.1rem', color: '#c8841a' }}>
-              Total: R$ {Number(detalhe.total).toFixed(2)}
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => { setDetalheId(null); setDetalhe(null); }}>Fechar</button>
-            </div>
-          </div>
+      {pedidos.map((p) => (
+        <div key={p.id} style={{ background: "#fff", padding: "15px", marginBottom: "10px", borderRadius: "10px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
+          <strong>Pedido #{p.id}</strong> — {p.cliente_nome || "Cliente não encontrado"}
+          <span style={{ marginLeft: "10px", padding: "2px 8px", borderRadius: "20px", fontSize: "12px", background: p.status === "entregue" ? "#28a745" : "#ffc107", color: "white" }}>{p.status}</span>
+          <div>Total: R$ {Number(p.total).toFixed(2)}</div>
         </div>
-      )}
+      ))}
 
-      {/* Modal: Novo pedido */}
       {modal && (
-        <div className="modal-overlay" onClick={() => setModal(false)}>
-          <div className="modal" style={{ maxWidth: 600 }} onClick={e => e.stopPropagation()}>
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }} onClick={() => setModal(false)}>
+          <div style={{ background: "white", padding: "30px", borderRadius: "10px", width: "500px" }} onClick={(e) => e.stopPropagation()}>
             <h3>Novo Pedido</h3>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Cliente *</label>
-                <select value={novoForm.cliente_id} onChange={e => setNovoForm({ ...novoForm, cliente_id: e.target.value })}>
-                  <option value="">Selecione...</option>
-                  {clientes.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Observação</label>
-                <input value={novoForm.observacao} onChange={e => setNovoForm({ ...novoForm, observacao: e.target.value })} placeholder="Ex: sem cebola" />
-              </div>
-            </div>
+            
+            <select 
+              value={novoForm.cliente_id} 
+              onChange={(e) => setNovoForm({ ...novoForm, cliente_id: e.target.value })}
+              style={{ width: "100%", padding: "10px", marginBottom: "15px" }}
+            >
+              <option value="">Selecione o cliente</option>
+              {clientes.map((c) => (
+                <option key={c.id} value={c.id}>{c.nome}</option>
+              ))}
+            </select>
 
-            <h4 style={{ marginBottom: 8 }}>Itens do Pedido</h4>
+            <textarea 
+              placeholder="Observação" 
+              value={novoForm.observacao} 
+              onChange={(e) => setNovoForm({ ...novoForm, observacao: e.target.value })}
+              style={{ width: "100%", padding: "10px", marginBottom: "15px" }}
+            />
+
+            <h4>Itens</h4>
             {novoForm.itens.map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 8, alignItems: 'center' }}>
-                <select style={{ flex: 2, padding: '8px', borderRadius: 8, border: '1px solid #e8d5c0' }}
-                  value={item.produto_id}
-                  onChange={e => atualizarItem(i, 'produto_id', e.target.value)}>
+              <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                <select 
+                  value={item.produto_id} 
+                  onChange={(e) => atualizarItem(i, "produto_id", e.target.value)}
+                  style={{ flex: 2, padding: "10px" }}
+                >
                   <option value="">Produto...</option>
-                  {produtos.map(p => <option key={p.id} value={p.id}>{p.nome} - R$ {Number(p.preco).toFixed(2)}</option>)}
+                  {produtos.map((p) => (
+                    <option key={p.id} value={p.id}>{p.nome} - R$ {p.preco}</option>
+                  ))}
                 </select>
-                <input type="number" min={1} style={{ width: 60, padding: '8px', borderRadius: 8, border: '1px solid #e8d5c0', textAlign: 'center' }}
-                  value={item.quantidade}
-                  onChange={e => atualizarItem(i, 'quantidade', Number(e.target.value))} />
-                <span style={{ whiteSpace: 'nowrap', fontSize: '0.85rem', color: '#c8841a', fontWeight: 600 }}>
-                  R$ {(item.quantidade * item.preco_unitario).toFixed(2)}
-                </span>
-                <button className="btn btn-danger btn-sm" onClick={() => removerItem(i)}>✕</button>
+                <input type="number" min={1} value={item.quantidade} onChange={(e) => atualizarItem(i, "quantidade", Number(e.target.value))} style={{ width: "70px", padding: "10px" }} />
+                <button onClick={() => removerItem(i)} style={{ padding: "10px", background: "#dc3545", color: "white", border: "none", borderRadius: "5px" }}>X</button>
               </div>
             ))}
+            
+            <button onClick={adicionarItem} style={{ padding: "10px 20px", marginBottom: "15px", background: "#28a745", color: "white", border: "none", borderRadius: "5px" }}>+ Adicionar Item</button>
 
-            <button className="btn btn-secondary btn-sm" style={{ marginBottom: 16 }} onClick={adicionarItem}>+ Adicionar Item</button>
-
-            {novoForm.itens.length > 0 && (
-              <div style={{ textAlign: 'right', fontWeight: 700, color: '#c8841a', marginBottom: 8 }}>
-                Total: R$ {totalNovoPedido.toFixed(2)}
-              </div>
-            )}
-
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setModal(false)}>Cancelar</button>
-              <button className="btn btn-primary" onClick={salvarPedido}>Criar Pedido</button>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+              <button onClick={() => setModal(false)} style={{ padding: "10px 20px", background: "#999", color: "white", border: "none", borderRadius: "5px" }}>Cancelar</button>
+              <button onClick={salvarPedido} style={{ padding: "10px 20px", background: "#c8841a", color: "white", border: "none", borderRadius: "5px" }}>Criar Pedido</button>
             </div>
           </div>
         </div>
