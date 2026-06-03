@@ -44,9 +44,6 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 
 ---
 
-🔧 Substitua a seção "Arquitetura" por esta versão:
-markdown
-
 ## 🏗️ Arquitetura
 
 ### Visão Geral
