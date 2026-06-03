@@ -51,6 +51,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 ### Visão Geral
 
 ```
+
                     ┌─────────────────┐
                     │    Frontend     │
                     │   React :3000   │
@@ -78,6 +79,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
                     │    pgAdmin      │
                     │    :5050        │
                     └─────────────────┘
+                    
 ```
 
 ### Vantagens dos Microsserviços
@@ -551,12 +553,4 @@ Este projeto foi desenvolvido para **fins educacionais** como parte da disciplin
 
 ---
 
-## 📝 **Para salvar no VS Code:**
 
-1. **Selecione todo o código acima**
-2. **Copie (Ctrl + C)**
-3. **Abra o arquivo `README.md` na raiz do projeto**
-4. **Cole (Ctrl + V)**
-5. **Salve (Ctrl + S)**
-
-O VS Code vai reconhecer automaticamente a formatação Markdown e mostrar a prévia bonita! 🚀
