@@ -1,62 +1,55 @@
-🥖 Padaria WeCoffe
 
-    Sistema de Gestão com Microsserviços
-    Disciplina: Arquitetura de Software | 3º Período ADS
 
-https://img.shields.io/badge/license-MIT-blue.svg
-https://img.shields.io/badge/docker-ready-blue
-https://img.shields.io/badge/node.js-20.x-green
-https://img.shields.io/badge/react-18.x-61dafb
-https://img.shields.io/badge/postgresql-15.x-336791
-📋 Índice
+## 🥖 Padaria WeCoffe
 
-    Sobre o Projeto
+> **Sistema de Gestão com Microsserviços**  
+> Disciplina: Arquitetura de Software | 3º Período ADS
 
-    Arquitetura
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)
+[![Node.js](https://img.shields.io/badge/node.js-20.x-green)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/react-18.x-61dafb)](https://reactjs.org/)
+[![PostgreSQL](https://img.shields.io/badge/postgresql-15.x-336791)](https://www.postgresql.org/)
 
-    Tecnologias
+---
 
-    Pré-requisitos
+##  Índice
 
-    Instalação e Execução
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Arquitetura](#arquitetura)
+- [Tecnologias](#tecnologias)
+- [Pré-requisitos](#pré-requisitos)
+- [Instalação e Execução](#instalação-e-execução)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Banco de Dados](#banco-de-dados)
+- [API Endpoints](#api-endpoints)
+- [Funcionalidades](#funcionalidades)
+- [Comandos Úteis](#comandos-úteis)
+- [Solução de Problemas](#solução-de-problemas)
+- [Checklist de Entrega](#checklist-de-entrega)
+- [Desenvolvedor](#desenvolvedor)
 
-    Estrutura do Projeto
+---
 
-    Banco de Dados
+## Sobre o Projeto
 
-    API Endpoints
+A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolvido com arquitetura baseada em **microsserviços**. O sistema permite gerenciar produtos, pedidos, clientes e funcionários de forma independente e escalável.
 
-    Funcionalidades
+### Objetivos Educacionais
 
-    Comandos Úteis
+- Aplicar conceitos de **Arquitetura de Software**
+- Implementar **microsserviços** com Node.js e Express
+- Utilizar **Docker** para containerização
+- Integrar **React** com múltiplos backends
+- Gerenciar **autenticação JWT** e comunicação entre serviços
 
-    Solução de Problemas
+---
 
-    Checklist de Entrega
+##  Arquitetura
 
-    Desenvolvedor
-
-📖 Sobre o Projeto
-
-A Padaria WeCoffe é um sistema completo de gestão para padarias, desenvolvido com arquitetura baseada em microsserviços. O sistema permite gerenciar produtos, pedidos, clientes e funcionários de forma independente e escalável.
-Objetivos Educacionais
-
-    ✅ Aplicar conceitos de Arquitetura de Software
-
-    ✅ Implementar microsserviços com Node.js e Express
-
-    ✅ Utilizar Docker para containerização
-
-    ✅ Integrar React com múltiplos backends
-
-    ✅ Gerenciar autenticação JWT e comunicação entre serviços
-
-🏗️ Arquitetura
-
-Visão Geral
+### Visão Geral
 
 ```
-
                     ┌─────────────────┐
                     │    Frontend     │
                     │   React :3000   │
@@ -86,95 +79,98 @@ Visão Geral
                     └─────────────────┘
 ```
 
-Vantagens dos Microsserviços
+### Vantagens dos Microsserviços
 
-Característica	Benefício
-Isolamento de falhas	Um serviço cair não derruba os outros
-Escalabilidade independente	Escala apenas o serviço necessário
-Deploys autônomos	Atualiza sem parar todo o sistema
-Tecnologias flexíveis	Cada serviço usa a melhor ferramenta
-💻 Tecnologias
-Camada	Tecnologias
-Frontend	React 18, Axios, React Router DOM
-Backend	Node.js, Express, JWT, Bcrypt, Cors
-Banco de Dados	PostgreSQL 15
-Containerização	Docker, Docker Compose
-Gerenciamento	pgAdmin
-Versionamento	Git, GitHub
+| Característica | Benefício |
+|----------------|-----------|
+| **Isolamento de falhas** | Um serviço cair não derruba os outros |
+| **Escalabilidade independente** | Escala apenas o serviço necessário |
+| **Deploys autônomos** | Atualiza sem parar todo o sistema |
+| **Tecnologias flexíveis** | Cada serviço usa a melhor ferramenta |
 
-⚙️ Pré-requisitos
+
+## Tecnologias
+
+| Camada | Tecnologias |
+|--------|-------------|
+| **Frontend** | React 18, Axios, Recharts, React Router DOM |
+| **Backend** | Node.js, Express, JWT, Bcrypt, Cors |
+| **Banco de Dados** | PostgreSQL 15 |
+| **Containerização** | Docker, Docker Compose |
+| **Gerenciamento** | pgAdmin |
+| **Versionamento** | Git, GitHub |
+
+
+##  Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
-    Docker Desktop (versão 20.10+)
 
-    Git (versão 2.30+)
 
-    Portas disponíveis: 3000, 3001, 3002, 3003, 5050, 5433
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (versão 20.10+)
+- [Git](https://git-scm.com/) (versão 2.30+)
+- Portas disponíveis: `3000`, `3001`, `3002`, `3003`, `5050`, `5432`
 
-🚀 Instalação e Execução
-1. Clonar o repositório
-bash
 
+##  Instalação e Execução
+
+### 1. Clonar o repositório
+
+```
 git clone https://github.com/janainasouza-dev/sistema-arquitetura.git
+
 cd sistema-arquitetura
+```
 
-2. Configurar variáveis de ambiente do frontend
-bash
+### 2. Configurar variáveis de ambiente
 
-# Criar arquivo .env dentro da pasta frontend
-cat > frontend/.env << 'EOF'
+```
+# Criar arquivo .env dentro do frontend com o seguinte codigo: 
+
+
 REACT_APP_API_PRODUTOS=http://localhost:3001/api
 REACT_APP_API_PEDIDOS=http://localhost:3002/api
 REACT_APP_API_FUNCIONARIOS=http://localhost:3003/api
-EOF
-
-3. Subir os contêineres
-bash
-
-# Primeira execução (build + up)
-docker compose up -d --build
-
-# Execuções subsequentes (início rápido)
-docker compose start
-
-# Parar o sistema (mantém dados)
-docker compose stop
-
-4. Acessar o sistema
-Serviço	URL	Credenciais
-Frontend	http://localhost:3000	admin@padaria.com / 1234
-API Produtos	http://localhost:3001/health	-
-API Pedidos	http://localhost:3002/health	-
-API Funcionários	http://localhost:3003/health	-
-pgAdmin	http://localhost:5050	admin@pgadmin.com / admin
-PostgreSQL	localhost:5433	padaria_user / padaria123
-
-5. Configurar conexão no pgAdmin
-
-    Clique em "Add New Server"
-
-    General → Name: Padaria WeCoffe
-
-    Connection:
-
-        Host: postgres
-
-        Port: 5432
-
-        Database: padaria_db
-
-        Username: padaria_user
-
-        Password: padaria123
-
-    Clique em Save
-
-📁 Estrutura do Projeto
-
 
 ```
 
+### 3. Subir os contêineres
+
+```bash
+# Primeira execução (build + up)
+docker compose up -d --build
+
+# Execuções subsequentes
+docker compose start
+```
+
+### 4. Acessar o sistema
+
+| Serviço | URL | Credenciais |
+|---------|-----|--------------|
+| **Frontend** | http://localhost:3000 | admin@padaria.com / 1234 |
+| **API Produtos** | http://localhost:3001/health | - |
+| **API Pedidos** | http://localhost:3002/health | - |
+| **API Funcionários** | http://localhost:3003/health | - |
+| **pgAdmin** | http://localhost:5050 | admin@pgadmin.com / admin |
+
+### 5. Configurar conexão no pgAdmin
+
+1. Clique em **"Add New Server"**
+2. **General** → Name: `Padaria WeCoffe`
+3. **Connection**:
+   - Host: `postgres`
+   - Port: `5432`
+   - Database: `padaria_db`
+   - Username: `padaria_user`
+   - Password: `padaria123`
+4. Clique em **Save**
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
 sistema-arquitetura/
 │
 ├── docker-compose.yml              # Orquestração dos contêineres
@@ -221,10 +217,13 @@ sistema-arquitetura/
             └── Relatorios.js        # Relatório de vendas
 ```
 
-🗄️ Banco de Dados
-Modelo Relacional Completo
-sql
+---
 
+## 🗄️ Banco de Dados
+
+### Modelo Relacional
+
+```sql
 -- Usuários (autenticação)
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
@@ -303,10 +302,11 @@ CREATE TABLE itens_pedido (
     preco_unitario DECIMAL(10,2),
     subtotal DECIMAL(10,2)
 );
+```
 
-📊 Queries Úteis para Análise
-sql
+### 📊 Queries Úteis para Análise
 
+```sql
 -- Produtos com estoque baixo
 SELECT nome, estoque FROM produtos WHERE estoque < 20;
 
@@ -327,78 +327,75 @@ JOIN produtos pr ON ip.produto_id = pr.id
 JOIN pedidos p ON ip.pedido_id = p.id
 WHERE p.status = 'entregue'
 GROUP BY pr.id ORDER BY quantidade_vendida DESC LIMIT 10;
+```
+
+---
 
 🔌 API Endpoints
 Microsserviço de Produtos (:3001)
-Método	Endpoint	Descrição	Autenticação
-POST	/api/auth/login	Autenticação	❌
-POST	/api/auth/registrar	Registrar usuário	❌
-GET	/api/auth/me	Dados do usuário	✅
-GET	/api/produtos	Listar produtos (com paginação/busca)	✅
-GET	/api/produtos/:id	Buscar produto	✅
-POST	/api/produtos	Criar produto	✅
-PUT	/api/produtos/:id	Atualizar produto	✅
-DELETE	/api/produtos/:id	Remover produto	✅
-GET	/api/categorias	Listar categorias	✅
-POST	/api/categorias	Criar categoria	✅
+Método	Endpoint	Descrição	
+POST	/api/auth/login	Autenticação	
+POST	/api/auth/registrar	Registrar usuário	
+GET	/api/auth/me	Dados do usuário	
+GET	/api/produtos	Listar produtos (com paginação/busca)	
+GET	/api/produtos/:id	Buscar produto	
+POST	/api/produtos	Criar produto	
+PUT	/api/produtos/:id	Atualizar produto	
+DELETE	/api/produtos/:id	Remover produto	
+GET	/api/categorias	Listar categorias	
+POST	/api/categorias	Criar categoria	
+
 Microsserviço de Pedidos (:3002)
-Método	Endpoint	Descrição	Autenticação
-GET	/api/pedidos	Listar pedidos	✅
-GET	/api/pedidos/:id	Buscar pedido	✅
-POST	/api/pedidos	Criar pedido	✅
-PATCH	/api/pedidos/:id/status	Atualizar status	✅
-GET	/api/pedidos/relatorio	Relatório de vendas	✅
-GET	/api/clientes	Listar clientes	✅
-POST	/api/clientes	Criar cliente	✅
-PUT	/api/clientes/:id	Atualizar cliente	✅
+
+Método	Endpoint	Descrição	
+GET	/api/pedidos	Listar pedidos	
+GET	/api/pedidos/:id	Buscar pedido	
+POST	/api/pedidos	Criar pedido	
+PATCH	/api/pedidos/:id/status	Atualizar status	
+GET	/api/pedidos/relatorio	Relatório de vendas	
+GET	/api/clientes	Listar clientes	
+POST	/api/clientes	Criar cliente	
+PUT	/api/clientes/:id	Atualizar cliente	
+
 Microsserviço de Funcionários (:3003)
-Método	Endpoint	Descrição	Autenticação
-GET	/api/funcionarios	Listar funcionários	✅
-GET	/api/funcionarios/:id	Buscar funcionário	✅
-POST	/api/funcionarios	Criar funcionário	✅
-PUT	/api/funcionarios/:id	Atualizar funcionário	✅
-DELETE	/api/funcionarios/:id	Remover funcionário	✅
-✨ Funcionalidades
-Nível 1 — Banco de Dados ✅
 
-    Conexão PostgreSQL via Docker
+Método	Endpoint	Descrição	
+GET	/api/funcionarios	Listar funcionários	
+GET	/api/funcionarios/:id	Buscar funcionário	
+POST	/api/funcionarios	Criar funcionário	
+PUT	/api/funcionarios/:id	Atualizar funcionário	
+DELETE	/api/funcionarios/:id	Remover funcionário	
 
-    Tabelas normalizadas
 
-    Relacionamentos entre entidades
+---
 
-Nível 2 — Backend ✅
+## ✨ Funcionalidades
 
-    3 microsserviços independentes
+### Nível 1 — Banco de Dados ✅
+- Conexão PostgreSQL via Docker
+- Tabelas normalizadas
+- Relacionamentos entre entidades
 
-    CRUD completo para todas entidades
+### Nível 2 — Backend ✅
+- 3 microsserviços independentes
+- CRUD completo para todas entidades
+- Autenticação JWT
+- CORS configurado
 
-    Autenticação JWT
+### Nível 3 — Frontend ✅
+- Paginação na listagem de produtos
+- Filtro de busca por nome/descrição
+- Dashboard com gráficos (Recharts)
+- Relatório de vendas por período
+- Interface responsiva
 
-    CORS configurado
+---
 
-    Rotas de relatórios
+## 🐳 Comandos Docker
 
-Nível 3 — Frontend ✅
+### Gerenciamento
 
-    Paginação na listagem de produtos
-
-    Filtro de busca por nome/descrição
-
-    Dashboard com estatísticas
-
-    Relatório de vendas por período
-
-    Interface responsiva
-
-    Alteração de status dos pedidos
-
-    CRUD completo de funcionários
-
-🐳 Comandos Úteis
-Gerenciamento de Containers
-bash
-
+```bash
 # Subir serviços (com rebuild)
 docker compose up -d --build
 
@@ -408,13 +405,10 @@ docker compose start
 # Parar serviços (mantém dados)
 docker compose stop
 
-# Parar e remover containers (mantém dados)
-docker compose down
-
-# Parar e remover TUDO (inclusive dados do banco)
+# Parar e remover tudo
 docker compose down -v
 
-# Ver status dos serviços
+# Ver status
 docker compose ps
 
 # Ver logs em tempo real
@@ -422,11 +416,12 @@ docker compose logs -f
 
 # Logs de serviço específico
 docker compose logs -f frontend
-docker compose logs -f backend-pedidos
+docker compose logs -f backend-produtos
+```
 
-Diagnóstico e Testes
-bash
+### Diagnóstico
 
+```bash
 # Testar health checks
 curl http://localhost:3001/health
 curl http://localhost:3002/health
@@ -437,48 +432,30 @@ curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@padaria.com","senha":"1234"}'
 
-# Testar relatório de vendas
-TOKEN=$(curl -s -X POST http://localhost:3001/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@padaria.com","senha":"1234"}' | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
-
-curl -X GET "http://localhost:3002/api/pedidos/relatorio?dataInicio=2026-01-01&dataFim=2026-12-31" \
-  -H "Authorization: Bearer $TOKEN"
-
-Banco de Dados
-bash
-
-# Acessar o banco
+# Acessar banco diretamente
 docker compose exec postgres psql -U padaria_user -d padaria_db
 
 # Backup do banco
 docker compose exec postgres pg_dump -U padaria_user padaria_db > backup.sql
+```
 
-# Restaurar backup
-docker compose exec -T postgres psql -U padaria_user padaria_db < backup.sql
+---
 
-# Corrigir sequência de IDs (funcionários)
-docker compose exec postgres psql -U padaria_user -d padaria_db -c \
-  "SELECT setval('funcionarios_id_seq', (SELECT COALESCE(MAX(id), 0) FROM funcionarios));"
+## 🔐 Autenticação JWT
 
-🔐 Autenticação JWT
+O sistema utiliza **JSON Web Tokens** para autenticação:
 
-O sistema utiliza JSON Web Tokens para autenticação:
-Fluxo de Autenticação
+### Fluxo de Autenticação
 
-    Usuário envia email/senha → /api/auth/login
+1. Usuário envia `email/senha` → `/api/auth/login`
+2. Backend valida credenciais e retorna token
+3. Frontend armazena token no `localStorage`
+4. Token é enviado no header: `Authorization: Bearer <token>`
+5. Backend valida token antes de processar requisições
 
-    Backend valida credenciais e retorna token
+### Estrutura do Token
 
-    Frontend armazena token no localStorage
-
-    Token é enviado no header: Authorization: Bearer <token>
-
-    Backend valida token antes de processar requisições
-
-Estrutura do Token
-json
-
+```json
 {
   "id": 4,
   "nome": "Administrador",
@@ -487,51 +464,57 @@ json
   "iat": 1780109375,
   "exp": 1780138175
 }
+```
 
+---
 
+## Solução de Problemas
 
-✅ Checklist de Entrega
+| Problema | Solução |
+|----------|---------|
+| **CORS error** | Verificar `app.use(cors())` no backend |
+| **401 Unauthorized** | Fazer login novamente para gerar novo token |
+| **Token inválido** | Limpar localStorage e relogar |
+| **Porta em uso** | `sudo lsof -ti:3000 \| xargs kill -9` |
+| **Banco não conecta** | `docker compose restart postgres` |
+| **Frontend não compila** | `docker compose build --no-cache frontend` |
 
-    Sistema rodando com Docker Compose
+---
 
-    Frontend acessível em localhost:3000
+## ✅ Checklist de Entrega
 
-    Login funcionando com JWT
+- [x] Sistema rodando com Docker Compose
+- [x] Frontend acessível em `localhost:3000`
+- [x] Login funcionando com JWT
+- [x] CRUD completo de produtos
+- [x] CRUD completo de pedidos
+- [x] Paginação na listagem
+- [x] Filtro de busca
+- [x] Dashboard com gráficos
+- [x] Relatório de vendas por período
+- [x] Documentação completa
 
-    CRUD completo de produtos
+---
 
-    CRUD completo de pedidos
+## 📄 Licença
 
-    CRUD completo de clientes
+Este projeto foi desenvolvido para **fins educacionais** como parte da disciplina de Arquitetura de Software.
 
-    CRUD completo de funcionários
+---
 
-    Paginação na listagem de produtos
+*Última atualização: Maio/2026*
+```
 
-    Filtro de busca por nome
+---
 
-    Dashboard com estatísticas
+## 📝 Principais melhorias aplicadas:
 
-    Relatório de vendas por período
+1. **Estrutura clara com emojis e badges** - Mais atrativo e profissional
+2. **Índice navegável** - Facilita localização das seções
+3. **Tabelas** - Para vantagens, tecnologias, endpoints e soluções de problemas
+4. **Formatação consistente** - Códigos, comandos e blocos bem organizados
+5. **Checklist visual** - Com emojis e caixas de seleção
+6. **Seção de badges** - Mostra tecnologias e status do projeto
+7. **Cabeçalho com destaque** - Nome do projeto em destaque
+8. **Organização hierárquica** - De informações gerais para específicas
 
-    Alteração de status dos pedidos
-
-    Documentação completa
-
-    Testes manuais realizados
-
-👩‍💻 Desenvolvedor
-
-    Nome: Janaina Souza
-
-    Disciplina: Arquitetura de Software
-
-    Período: 3º Período ADS
-
-    GitHub: janainasouza-dev
-
-📄 Licença
-
-Este projeto foi desenvolvido para fins educacionais como parte da disciplina de Arquitetura de Software.
-
-*Última atualização: Junho/2026*
