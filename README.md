@@ -42,7 +42,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 - ✅ Integrar **React** com múltiplos backends
 - ✅ Gerenciar **autenticação JWT** e comunicação entre serviços
 
----
+---dock
 
 ## 🏗️ Arquitetura
 
@@ -318,8 +318,8 @@ GROUP BY pr.id ORDER BY quantidade_vendida DESC LIMIT 10;
 
 | Método | Endpoint | Descrição | Autenticação |
 |--------|----------|-----------|--------------|
-| POST | `/api/auth/login` | Autenticação | ❌ |
-| POST | `/api/auth/registrar` | Registrar usuário | ❌ |
+| POST | `/api/auth/login` | Autenticação | ✅  |
+| POST | `/api/auth/registrar` | Registrar usuário | ✅  |
 | GET | `/api/auth/me` | Dados do usuário | ✅ |
 | GET | `/api/produtos` | Listar produtos (com paginação/busca) | ✅ |
 | GET | `/api/produtos/:id` | Buscar produto | ✅ |
@@ -525,7 +525,5 @@ Este projeto foi desenvolvido para **fins educacionais** como parte da disciplin
 
 *Última atualização: Junho/2026*
 ```
-
----
 
 
