@@ -1,5 +1,3 @@
-Aqui está o **README.md completamente corrigido e atualizado**:
-
 ```markdown
 # 🥖 Padaria WeCoffe
 
@@ -79,7 +77,7 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
                     │    pgAdmin      │
                     │    :5050        │
                     └─────────────────┘
-                    
+
 ```
 
 ### Vantagens dos Microsserviços
