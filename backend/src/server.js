@@ -8,12 +8,10 @@ const SERVICE_NAME = process.env.SERVICE_NAME || 'produtos';
 // ============================================
 // MIDDLEWARES GLOBAIS
 // ============================================
+// CORS configurado para aceitar qualquer origem (modo desenvolvimento)
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://192.168.5.109:3000',
-  ],
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  origin: '*',  // ← PERMITE QUALQUER IP/ORIGEM
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
