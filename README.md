@@ -12,6 +12,15 @@
 
 ---
 
+## 👩‍💻 Desenvolvedores
+
+- **Nome:** Janaina Souza de Souza, Rodrigo Gomes Brito e Eduardo Felipe Matos Santos
+- **Disciplina:** Arquitetura de Software
+- **Período:** 3º Período ADS
+- **GitHub:** [janainasouza-dev](https://github.com/janainasouza-dev)
+
+
+
 ## 📋 Índice
 
 - [Sobre o Projeto](#sobre-o-projeto)
@@ -486,15 +495,6 @@ O sistema utiliza **JSON Web Tokens** para autenticação:
 | **Relatório não carrega** | Verificar se `relatorioVendas` está no controller |
 | **Funcionários somem ao sair da aba** | Verificar `useEffect` e `carregarFuncionarios()` |
 | **db.getClient is not a function** | Substituir por `db.query()` no controller |
-
----
-
-## 👩‍💻 Desenvolvedor
-
-- **Nome:** Janaina Souza
-- **Disciplina:** Arquitetura de Software
-- **Período:** 3º Período ADS
-- **GitHub:** [janainasouza-dev](https://github.com/janainasouza-dev)
 
 ---
 
