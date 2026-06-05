@@ -132,6 +132,7 @@ docker compose start
 # Parar o sistema (mantém dados)
 docker compose stop
 ```
+---
 
 ### 4. Acessar o sistema
 
