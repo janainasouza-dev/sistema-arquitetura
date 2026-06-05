@@ -1,4 +1,3 @@
-```markdown
 # 🥖 Padaria WeCoffe
 
 > **Sistema de Gestão com Microsserviços**  
@@ -51,7 +50,6 @@ A **Padaria WeCoffe** é um sistema completo de gestão para padarias, desenvolv
 - ✅ Integrar **React** com múltiplos backends
 - ✅ Gerenciar **autenticação JWT** e comunicação entre serviços
 
----dock
 
 ## 🏗️ Arquitetura
 
@@ -506,6 +504,6 @@ Este projeto foi desenvolvido para **fins educacionais** como parte da disciplin
 ---
 
 *Última atualização: Junho/2026*
-```
+``
 
 
