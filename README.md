@@ -16,7 +16,7 @@
 - **Nome:** Janaina Souza de Souza, Rodrigo Gomes Brito e Eduardo Felipe Matos Santos
 - **Disciplina:** Arquitetura de Software
 - **Período:** 3º Período ADS
-- **GitHub:** [janainasouza-dev](https://github.com/janainasouza-dev)
+
 
 
 

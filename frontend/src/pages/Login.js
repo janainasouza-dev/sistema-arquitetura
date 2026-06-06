@@ -20,14 +20,10 @@ export default function Login({ onLogin }) {
     try {
       console.log('📧 Tentando login com:', form.email);
       
-      // Chamada REAL para sua API usando o authService
       const { user } = await authService.login(form.email, form.senha);
       
       console.log('✅ Login bem-sucedido! Usuário:', user);
       console.log('🔑 Token salvo:', localStorage.getItem('@App:token'));
-      
-      // Chama o callback onLogin passando os dados do usuário
-      // O App.js vai gerenciar o redirecionamento automaticamente
       if (onLogin) {
         onLogin(user);
       }

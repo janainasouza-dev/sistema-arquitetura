@@ -10,7 +10,7 @@ const SERVICE_NAME = process.env.SERVICE_NAME || 'produtos';
 // ============================================
 // CORS configurado para aceitar qualquer origem (modo desenvolvimento)
 app.use(cors({
-  origin: '*',  // ← PERMITE QUALQUER IP/ORIGEM
+  origin: '*',  
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));

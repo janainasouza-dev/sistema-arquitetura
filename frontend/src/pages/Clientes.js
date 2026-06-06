@@ -1,4 +1,4 @@
-// src/pages/Clientes.js
+
 import React, { useEffect, useState } from 'react';
 import { clientesService } from '../services/api';
 
