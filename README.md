@@ -123,6 +123,8 @@ EOF
 ```bash
 # Primeira execução (build + up)
 docker compose up -d --build
+ou 
+docker-compose up -d --build (no windows)
 
 # Execuções subsequentes
 docker compose start
