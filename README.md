@@ -22,6 +22,7 @@
 
 ## 📋 Índice
 
+- [Desenvolvedores](#desenvolvedores)
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Arquitetura](#arquitetura)
 - [Tecnologias](#tecnologias)
@@ -34,7 +35,6 @@
 - [Comandos Úteis](#comandos-úteis)
 - [Solução de Problemas](#solução-de-problemas)
 - [Checklist de Entrega](#checklist-de-entrega)
-- [Desenvolvedor](#desenvolvedor)
 
 ---
 
