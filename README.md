@@ -107,7 +107,7 @@ git clone https://github.com/janainasouza-dev/sistema-arquitetura.git
 cd sistema-arquitetura
 ```
 
-### 2. Configurar variáveis de ambiente
+### 2. Configurar variáveis de ambiente(não sera necessário devido ao docker-compose ja estar configurado)
 
 ```bash
 # Criar arquivo .env dentro do frontend
